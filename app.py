@@ -166,9 +166,9 @@ def updatebook(id):
 
 @app.route('/deletebook/<string:id>')
 def deletebook(id):
-    cur.execute("DELETE FROM author WHERE author_id="+id+"")
+    cur.execute("DELETE FROM book WHERE book_id="+id+"")
     con.commit()
-    return  redirect('/addauthor')
+    return  redirect('/addbook')
 
 @app.route('/searchbook', methods=["POST","GET"])
 def searchbook():
