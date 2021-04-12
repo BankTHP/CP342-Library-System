@@ -1,0 +1,42 @@
+{% extends 'base_layout.html' %}
+{% include 'includes/_navbaradmin.html' %}
+{% block body %}
+<div class="mt">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="touch">
+                <div class="card text-left">
+                    <div class="card-body">
+                        <form action='' method="POST">
+                            <h4 class=text-center>แก้ไขข้อมูล</h4>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <h4>รหัสนิสิต :</h4>
+                                    <input type="integer" placeholder="รหัสนิสิต" class="form-control"  name="std_id"value="{{ data[0][0]}}" /><br>
+                                    <h4>ชื่อ :</h4>
+                                    <input type="text" placeholder="ชื่อ" class="form-control" name="std_firstname"value="{{data[0][1]}}" /><br>
+                                    <h4>นามสกุล :</h4>
+                                    <input type="text" placeholder="นามสกุล" class="form-control" name="std_lastname" value="{{data[0][2]}}" /><br>
+                                    <h4>Major :</h4>
+                                    <input type="text" placeholder="Major" class="form-control" name="major" value="{{data[0][3]}}" /><br>
+                                    <h4>ชั้นปีการศึกษา :</h4>
+                                    <input type="text" placeholder="ชั้นปีการศึกษา" class="form-control" name="Year"value="{{data[0][4]}}" /><br>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <div class="btn-group pt-3">
+                                    <input type="submit" class="btn btn-success mr-2" value="อัพเดต" />
+                                    <a href="/addstudent" class="btn btn-primary">ย้อนกลับ <i
+                                            class="fas fa-arrow-circle-left"></i></a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
