@@ -1,13 +1,13 @@
 from flask import Flask,render_template,request,redirect
 import psycopg2
-
-con=psycopg2.connect(
+try: 
+    con=psycopg2.connect(
     host='localhost',
     database='CP342_project',
     user='postgres',
     password='0957132960'
     )
-
+except (Exception, psycopg2.Error) as error: print("Error selecting data from table book", error)
 cur=con.cursor()
 app = Flask(__name__)
 
@@ -190,5 +190,7 @@ def searchbooks():
     if request.method == 'GET' :
         cur.execute("SELECT * FROM book")
         result = cur.fetchall()
-        return render_template("searchbook.html",data = result)   
+        return render_template("searchbook.html",data = result)
+        
+
 app.run(debug=True,use_reloader=True)
