@@ -42,12 +42,14 @@ def update(id):
         year = request.form["Year"]
         pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
         cur.execute(pg_update, (name,lname,major,year, id))
+        con.commit()
         return redirect('/addstudent')
         
 
 @app.route('/delete/<string:id>')
 def delete(id):
     cur.execute("DELETE FROM student WHERE std_id="+id+"")
+    con.commit()
     return  redirect('/addstudent')
 
 @app.route('/search', methods=["POST","GET"])
@@ -57,6 +59,7 @@ def search():
         pg_del = ("SELECT * FROM student WHERE std_firstname LIKE '"'%{}%'"'OR std_lastname LIKE '"'%{}%'"'OR std_major LIKE '"'%{}%'"' OR std_year LIKE '"'%{}%'"'").format(input,input,input,input)
         cur.execute(pg_del)
         result = cur.fetchall()
+        con.commit()
     return render_template("add.html",data = result)   
 
 @app.route('/adminpage')
@@ -92,23 +95,23 @@ def insertauthordb() :
 @app.route('/updateauthor/<string:id>',methods=["GET", "POST"])
 def updateauthor(id):
     if request.method == 'GET':
-        cur.execute("SELECT * FROM student WHERE std_id ="+id+"")
+        cur.execute("SELECT * FROM author WHERE author_id ="+id+"ORDER BY author_id")
         update = cur.fetchall()
-        return render_template("update.html",data = update)
+        return render_template("updateauthor.html",data = update)
     if request.method == 'POST':
-        id = request.form["std_id"] 
-        name = request.form["std_firstname"] 
-        lname = request.form["std_lastname"] 
-        major = request.form["major"]
-        year = request.form["Year"]
-        pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
-        cur.execute(pg_update, (name,lname,major,year, id))
+        id = request.form["id"] 
+        name = request.form["firstname"] 
+        lname = request.form["lastname"] 
+        pg_update = """Update author set author_firstname = %s , author_lastname = %s  where author_id = %s"""
+        cur.execute(pg_update, (name,lname,id))
+        con.commit()
         return redirect('/addauthor')
         
 
 @app.route('/deleteauthor/<string:id>')
 def deleteauthor(id):
-    cur.execute("DELETE FROM student WHERE std_id="+id+"")
+    cur.execute("DELETE FROM author WHERE author_id="+id+"")
+    con.commit()
     return  redirect('/addauthor')
 
 @app.route('/searchauthor', methods=["POST","GET"])
