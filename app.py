@@ -76,8 +76,12 @@ def insertstudentdb() :
     con.commit()
     return print("สำเร็จ!")
 
+
+
+##############################################################################################################################AUTHOR
+
 @app.route('/addauthor', methods=["POST","GET"])
-def addbook():
+def addauthor():
     if request.method == 'POST' :
         insertauthordb()
         return redirect('/addauthor')
@@ -121,6 +125,70 @@ def searchauthor():
         pg_del = ("SELECT * FROM author WHERE author_firstname LIKE '"'%{}%'"'OR author_lastname LIKE '"'%{}%'"'").format(input,input)
         cur.execute(pg_del)
         result = cur.fetchall()
-    return render_template("add.html",data = result)   
-    
+    return render_template("addauthor.html",data = result)   
+
+##############################################################################################################################
+@app.route('/addbook', methods=["POST","GET"])
+def addbook():
+    if request.method == 'POST' :
+        insertbookdb()
+        return redirect('/addbook')
+    if request.method == 'GET' :
+        cur.execute("SELECT * FROM book")
+        result = cur.fetchall()
+        return render_template("addbook.html",data = result)
+
+def insertbookdb() :
+    author_id = request.form["a_id"] 
+    title = request.form["title"] 
+    floor = request.form["floor"] 
+    publisher = request.form["publisher"] 
+    cur.execute('insert into book (author_id,booktitle,floor,book_publisher) values (%s,%s,%s,%s)',(author_id,title,floor,publisher))
+    con.commit()
+
+@app.route('/updatebook/<string:id>',methods=["GET", "POST"])
+def updatebook(id):
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM book WHERE book_id ="+id+"ORDER BY book_id")
+        update = cur.fetchall()
+        return render_template("updatebook.html",data = update)
+    if request.method == 'POST':
+        bookid = request.form["book_id"] 
+        title = request.form["title"] 
+        author_id = request.form["author_id"] 
+        floor = request.form["floor"] 
+        publisher = request.form["year"] 
+        pg_update = """Update book set author_id = %s , booktitle = %s , floor = %s , book_publisher = %s where book_id = %s"""
+        cur.execute(pg_update, (author_id,title,floor,publisher,bookid))
+        con.commit()
+        return redirect('/addbook')
+        
+
+@app.route('/deletebook/<string:id>')
+def deletebook(id):
+    cur.execute("DELETE FROM author WHERE author_id="+id+"")
+    con.commit()
+    return  redirect('/addauthor')
+
+@app.route('/searchbook', methods=["POST","GET"])
+def searchbook():
+    if request.method == 'POST' :
+        input = request.form["input"]
+        pg_del = ("SELECT * FROM book WHERE author_firstname LIKE '"'%{}%'"'OR author_lastname LIKE '"'%{}%'"'").format(input,input)
+        cur.execute(pg_del)
+        result = cur.fetchall()
+    return render_template("addbook.html",data = result)   
+
+@app.route('/searchbooks', methods=["POST","GET"])
+def searchbooks():
+    if request.method == 'POST' :
+        input = request.form["input"]
+        pg_del = ("SELECT * FROM book WHERE booktitle LIKE '"'%{}%'"'").format(input,input)
+        cur.execute(pg_del)
+        result = cur.fetchall()
+        return render_template("searchbook.html",data = result)   
+    if request.method == 'GET' :
+        cur.execute("SELECT * FROM book")
+        result = cur.fetchall()
+        return render_template("searchbook.html",data = result)   
 app.run(debug=True,use_reloader=True)
