@@ -7,31 +7,18 @@
       <div class="touch">
         <div class="card">
           <div class="card-body">
-            <h5 class="text-center">เพิ่มข้อมูลนักเรียน</h5>
+            <h5 class="text-center">เพิ่มผู้แต่ง</h5>
             <div class="col-sm">
               <div class="form">
-                <form action="/addstudent" method="post">
+                <form action="/addauthor" method="post">
                   <div class="form-group">
-                    <label for="fname">ID:</label>
-                    <input type="text" class="form-control" id="s_id" name="s_id" placeholder="ID">
+                    <label for="fname">ชื่อผู้แต่ง :</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="ชื่อ">
                   </div>
 
                   <div class="form-group">
-                    <label for="fname">First name:</label>
-                    <input type="text" id="fname" name="fname" class="form-control" placeholder="First name">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="lname">Last name:</label>
-                    <input type="text" id="lname" class="form-control" name="lname" placeholder="Last name">
-                  </div>
-                  <div class="form-group">
-                    <label for="fname">Major:</label>
-                    <input type="text" id="major" name="major" placeholder="Major" class="form-control">
-                  </div>
-                  <div class="form-group">
-                    <label for="fname">Year:</label>
-                    <input type="text" id="Year" class="form-control" name="Year" placeholder="Year">
+                    <label for="lname">นามสกุลผู้แต่ง :</label>
+                    <input type="text" id="author" class="form-control" name="lname" placeholder="นามสกุล">
                   </div>
                   <br>
                   <div class="form-group">
@@ -54,10 +41,10 @@
         <div class="row">
           <div class="touch">
             <div class="card-body">
-              <h5 class="text-center">ค้นหารายชื่อนิสิต</h5>
+              <h5 class="text-center">ค้นหาผู้แต่ง</h5>
               <div class="col-sm">
                 <div class="form">
-                  <form action="/search" method="POST">
+                  <form action="/searchauthor" method="POST">
                     <input type="text" name="input" class="form-control" />
                     <br>
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -69,11 +56,9 @@
           </div>
           <table class="table table-bordered  table-success">
             <tr>
-              <th>รหัสนิสิต</th>
-              <th>ชื่อ</th>
-              <th>นามสกุล</th>
-              <th>Major</th>
-              <th>ชั้นปีการศึกษา</th>
+              <th>ID ผู้แต่ง</th>
+              <th>ชื่อผู้แต่ง</th>
+              <th>นามสกุลผู้แต่ง</th>
               <th></th>
             </tr>
             <tbody style="background-color: white">
@@ -82,9 +67,7 @@
                 <td>{{i[0]}}</td>
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}}</td>
-                <td>{{i[3]}}</td>
-                <td>{{i[4]}}</td>
-                <td><a href="/update/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil" aria-hidden="true"></i>
+                <td><a href="/updateauthor/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil" aria-hidden="true"></i>
                     <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm" data-toggle="confirm">ลบ</i></td>
 
               </tr>
@@ -122,7 +105,7 @@
       });
       $(".yes").click(function () {
           var id = $(this).data("id");
-          window.location.href = "/delete/" + id;
+          window.location.href = "/deleteauthor/" + id;
       });
   });
 </script>
