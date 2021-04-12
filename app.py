@@ -63,7 +63,6 @@ def search():
 def admin():
     return render_template("admin.html")
 
-
 def insertstudentdb() :
     id = request.form["s_id"] 
     name = request.form["fname"] 
@@ -104,13 +103,13 @@ def updateauthor(id):
         year = request.form["Year"]
         pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
         cur.execute(pg_update, (name,lname,major,year, id))
-        return redirect('/addstudent')
+        return redirect('/addauthor')
         
 
 @app.route('/deleteauthor/<string:id>')
 def deleteauthor(id):
     cur.execute("DELETE FROM student WHERE std_id="+id+"")
-    return  redirect('/addstudent')
+    return  redirect('/addauthor')
 
 @app.route('/searchauthor', methods=["POST","GET"])
 def searchauthor():
