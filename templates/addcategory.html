@@ -10,7 +10,7 @@
                         <h5 class="text-center">เพิ่มประเภทหนังสือ</h5>
                         <div class="col-sm">
                             <div class="form">
-                                <form action="/addauthor" method="post">
+                                <form action="/addcategory" method="post">
                                     <div class="form-group">
                                         <label for="name">ชื่อประเภท :</label>
                                         <input type="text" id="name" name="name" class="form-control"
@@ -19,7 +19,7 @@
 
                                     <div class="form-group">
                                         <label for="dis">Description :</label>
-                                        <input type="text" id="description" class="form-control" name="Description"
+                                        <input type="text" id="des" class="form-control" name="des"
                                             placeholder="description">
                                     </div>
                                     <br>
@@ -69,11 +69,10 @@
                                 <td>{{i[0]}}</td>
                                 <td>{{i[1]}}</td>
                                 <td>{{i[2]}}</td>
-                                <td><a href="/updateauthor/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i
+                                <td><a href="/updatecategory/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i
                                         class="fa fa-pencil" aria-hidden="true"></i>
                                     <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
                                         data-toggle="confirm">ลบ</i></td>
-
                             </tr>
                             {% endfor %}
                         </tbody>

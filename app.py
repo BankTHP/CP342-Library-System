@@ -25,14 +25,13 @@ def admin():
 def home():
     if request.method == 'POST' :
         try : 
-            id = request.form["s_id"] 
-            name = request.form["fname"] 
-            lastname = request.form["lname"] 
-            major = request.form["major"]
-            year = request.form["Year"]
+            id = request.form["s_id"]            
+            name = request.form["fname"]          
+            lastname = request.form["lname"]        
+            major = request.form["major"]           
+            year = request.form["year"]
             addstudent = """insert into student values (%s,%s,%s,%s,%s)"""
             cur.execute(addstudent,(id,name,lastname,major,year))
-            print("สำเร็จ") 
         except (Exception, psycopg2.Error) as error:     
             print("Error จ้า", error)
             return redirect('/addstudent')
@@ -81,15 +80,10 @@ def delete(id):
         con.commit()
         return  redirect('/addstudent')
 
-@app.route('/search', methods=["POST","GET"])
-def search():
-    if request.method == 'POST' :
-        input = request.form["input"]
-        pg_del = ("SELECT * FROM student WHERE std_firstname LIKE '"'%{}%'"'OR std_lastname LIKE '"'%{}%'"'OR std_major LIKE '"'%{}%'"' OR std_year LIKE '"'%{}%'"'").format(input,input,input,input)
-        cur.execute(pg_del)
-        result = cur.fetchall()
-        con.commit()
-    return render_template("add.html",data = result)   
+@app.route('/search/<string:id>', methods=['POST','GET'])
+def search(id):
+    return(id)
+    
 
 
 
@@ -167,13 +161,16 @@ def addbook():
         result = cur.fetchall()
         cur.execute("SELECT * FROM author order by author_id")
         author = cur.fetchall()
-        return render_template("addbook.html",data = result,data2 = author)
+        cur.execute("SELECT * FROM category_list")
+        category = cur.fetchall()
+        return render_template("addbook.html",data = result,data2 = author,data3 = category)
 
 def insertbookdb() :
-    author_id = 2
+    author_id = request.form["a_id"]
     title = request.form["title"] 
-    floor = 2
-    publisher = request.form["publisher"] 
+    floor = request.form["floor"]
+    publisher = request.form["publisher"]
+    category = request.form["c_id"]
     try :
         cur.execute('insert into book (author_id,booktitle,floor,book_publisher) values (%s,%s,%s,%s)',(author_id,title,floor,publisher))
     except (Exception, psycopg2.Error) as error: 
@@ -240,27 +237,25 @@ def searchbooks():
         result = cur.fetchall()
         return render_template("searchbook.html",data = result)
 
-@app.route('/addcaterory', methods=["POST","GET"])
+@app.route('/addcategory', methods=["POST","GET"])
 def addcaterory():
     if request.method == 'POST' :
         try : 
-            id = request.form["s_id"] 
-            name = request.form["fname"] 
-            lastname = request.form["lname"] 
-            major = request.form["major"]
-            year = request.form["Year"]
-            addstudent = """insert into student values (%s,%s,%s,%s,%s)"""
-            cur.execute(addstudent,(id,name,lastname,major,year))
+            name = request.form["name"] 
+            des = request.form["des"] 
+            addstudent = """insert into category_list (categoryname,des) values (%s,%s)"""
+            cur.execute(addstudent,(name,des))
             print("สำเร็จ") 
         except (Exception, psycopg2.Error) as error:     
             print("Error จ้า", error)
-            return redirect('/addstudent')
+            return redirect('/addcategory')
         finally : 
             con.commit() 
-            return redirect('/addstudent') 
+            return redirect('/addcategory') 
+
     if request.method == 'GET' : 
 
-        cur.execute("SELECT * FROM student ORDER BY std_id")
+        cur.execute("SELECT * FROM category_list")
 
         result = cur.fetchall()
 

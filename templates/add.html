@@ -30,8 +30,8 @@
                     <input type="text" id="major" name="major" placeholder="Major" class="form-control">
                   </div>
                   <div class="form-group">
-                    <label for="author">Choose a Year:</label>     
-                    <select id="year" name="year" form="year">         
+                    <label for="author">Choose a Year:</label>
+                    <select type="number" id="year" name="year">
                       <option value="1">1</option>
                       <option value="2">2</option>
                       <option value="3">3</option>
@@ -62,14 +62,15 @@
               <div class="col-sm">
                 <div class="form">
                   <label>ค้นหารายชื่อนิสิต</label>
-                  <form action="/search" method="POST">
-                    <select id="a_id" name="a_id" form="a_id" class="form-control select2-multi" name="tags" multiple="multiple">
+                  <form>
+                    <select id="input" name="input" form="input" class="form-control select2-multi"
+                      name="tags" multiple="multiple">
                       {% for i in data %}
-                      <option id="{{i[0]}}" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}} | {{i[3]}} | {{i[4]}}</option>
+                      <option value="{{i[0]}}"> {{i[0]}} | {{i[1]}} {{i[2]}} | {{i[3]}} | {{i[4]}} </option>
                       {% endfor %}
                     </select>
-                    <button type="submit" class="btn btn-primary">Submit</button>
                   </form>
+                  <button class="btn btn-primary" onclick="send()">Submit</button>
                   <br>
                 </div>
               </div>
@@ -92,8 +93,10 @@
                 <td>{{i[2]}}</td>
                 <td>{{i[3]}}</td>
                 <td>{{i[4]}}</td>
-                <td><a href="/update/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil" aria-hidden="true"></i>
-                    <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm" data-toggle="confirm">ลบ</i></td>
+                <td><a href="/update/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
+                    aria-hidden="true"></i>
+                  <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
+                    data-toggle="confirm">ลบ</i></td>
 
               </tr>
               {% endfor %}
@@ -121,20 +124,30 @@
   </div>
 </div>
 <script>
-  $(function(){
-  $('.select2-multi').select2();
-});
-  $(document).ready(function () {
-      $(".delete").click(function () {
-          var id = $(this).data("id");
-          $(".yes").data("id", id);
-          var title = $(".yes").data("id");
-          $("#confirm").modal();
-      });
-      $(".yes").click(function () {
-          var id = $(this).data("id");
-          window.location.href = "/delete/" + id;
-      });
+  var selectedinput;
+  $(function () {
+    $('.select2-multi').select2();
+
   });
+  $('#input').change(function () {
+    var input = $(this).val()
+    selectedinput = input.join("-");
+  })
+function send(){
+  window.location.href = "/search/"+selectedinput;
+}
+$(document).ready(function () {
+    $(".delete").click(function () {
+      var id = $(this).data("id");
+      $(".yes").data("id", id);
+      var title = $(".yes").data("id");
+      $("#confirm").modal();
+    });
+    $(".yes").click(function () {
+      var id = $(this).data("id");
+      window.location.href = "/delete/" + id;
+    });
+  });
+ 
 </script>
 {% endblock %}
