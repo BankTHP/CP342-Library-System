@@ -128,6 +128,7 @@ def searchauthor():
     return render_template("addauthor.html",data = result)   
 
 ##############################################################################################################################
+
 @app.route('/addbook', methods=["POST","GET"])
 def addbook():
     if request.method == 'POST' :
@@ -136,10 +137,12 @@ def addbook():
     if request.method == 'GET' :
         cur.execute("SELECT * FROM book")
         result = cur.fetchall()
-        return render_template("addbook.html",data = result)
+        cur.execute("SELECT * FROM author")
+        author = cur.fetchall()
+        return render_template("addbook.html",data = result,data2 = author)
 
 def insertbookdb() :
-    author_id = request.form["a_id"] 
+    author_id = 4
     title = request.form["title"] 
     floor = request.form["floor"] 
     publisher = request.form["publisher"] 
@@ -151,7 +154,11 @@ def updatebook(id):
     if request.method == 'GET':
         cur.execute("SELECT * FROM book WHERE book_id ="+id+"ORDER BY book_id")
         update = cur.fetchall()
-        return render_template("updatebook.html",data = update)
+        cur.execute("SELECT * FROM author NATURAL JOIN book WHERE book_id = "+id+"")
+        author = cur.fetchall()
+        cur.execute("SELECT * FROM author book")
+        authorupdate = cur.fetchall()
+        return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate)
     if request.method == 'POST':
         bookid = request.form["book_id"] 
         title = request.form["title"] 

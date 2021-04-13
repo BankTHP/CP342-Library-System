@@ -17,15 +17,20 @@
                   </div>
                   <div class="form-group">
                     <label for="lname">Floor :</label>
-                    <input type="text" id="Floor" class="form-control" name="a_id" placeholder="floor">
+                    <input type="text" id="Floor" class="form-control" name="floor" placeholder="floor">
                   </div>
                   <div class="form-group">
-                    <label for="lname">Author id :</label>
-                    <input type="text" id="author" class="form-control" name="floor" placeholder="author_id">
+                    <label for="author">Choose a author:</label>
+                    
+                    <select id="a_id" name="a_id" form="author">
+                      {% for i in data2 %}
+                      <option value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}</option>
+                      {% endfor %}
+                    </select>
                   </div>
                   <div class="form-group">
                     <label for="lname">Publisher :</label>
-                    <input type="text" id="publisher" class="form-control" name="publisher" placeholder="publisher">
+                    <input type="date" id="publisher" class="form-control" name="publisher" >
                   </div>
                   <br>
                   <div class="form-group">
@@ -74,8 +79,10 @@
                 <td>{{i[0]}}</td>
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}}</td>
-                <td><a href="/updatebook/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil" aria-hidden="true"></i>
-                    <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm" data-toggle="confirm">ลบ</i></td>
+                <td><a href="/updatebook/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
+                    aria-hidden="true"></i>
+                  <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
+                    data-toggle="confirm">ลบ</i></td>
 
               </tr>
               {% endfor %}
@@ -104,16 +111,16 @@
 </div>
 <script>
   $(document).ready(function () {
-      $(".delete").click(function () {
-          var id = $(this).data("id");
-          $(".yes").data("id", id);
-          var title = $(".yes").data("id");
-          $("#confirm").modal();
-      });
-      $(".yes").click(function () {
-          var id = $(this).data("id");
-          window.location.href = "/deletebook/" + id;
-      });
+    $(".delete").click(function () {
+      var id = $(this).data("id");
+      $(".yes").data("id", id);
+      var title = $(".yes").data("id");
+      $("#confirm").modal();
+    });
+    $(".yes").click(function () {
+      var id = $(this).data("id");
+      window.location.href = "/deletebook/" + id;
+    });
   });
 </script>
 {% endblock %}
