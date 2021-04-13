@@ -1,0 +1,119 @@
+{% extends 'base_layout.html' %}
+{% include 'includes/_navbaradmin.html' %}
+{% block body %}
+<div class="mt">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="touch">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="text-center">เพิ่มประเภทหนังสือ</h5>
+                        <div class="col-sm">
+                            <div class="form">
+                                <form action="/addauthor" method="post">
+                                    <div class="form-group">
+                                        <label for="name">ชื่อประเภท :</label>
+                                        <input type="text" id="name" name="name" class="form-control"
+                                            placeholder="ชื่อประเภท">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="dis">Description :</label>
+                                        <input type="text" id="description" class="form-control" name="Description"
+                                            placeholder="description">
+                                    </div>
+                                    <br>
+                                    <div class="form-group">
+                                        <input type="submit" class="btn btn-primary" value="Submit">
+                                    </div>
+                                </form>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="touch">
+        <div class="card text-left">
+            <div class="card-body">
+                <div class="row">
+                    <div class="touch">
+                        <div class="card-body">
+                            <h5 class="text-center">ค้นหาผู้แต่ง</h5>
+                            <div class="col-sm">
+                                <div class="form">
+                                    <form action="/searchauthor" method="POST">
+                                        <input type="text" name="input" class="form-control select2-multi" name="tags" multiple="multiple" />
+                                        <br>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </form>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-bordered  table-success">
+                        <tr>
+                            <th>ID ผู้แต่ง</th>
+                            <th>ชื่อผู้แต่ง</th>
+                            <th>นามสกุลผู้แต่ง</th>
+                            <th></th>
+                        </tr>
+                        <tbody style="background-color: white">
+                            {% for i in data %}
+                            <tr>
+                                <td>{{i[0]}}</td>
+                                <td>{{i[1]}}</td>
+                                <td>{{i[2]}}</td>
+                                <td><a href="/updateauthor/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i
+                                        class="fa fa-pencil" aria-hidden="true"></i>
+                                    <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
+                                        data-toggle="confirm">ลบ</i></td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="confirm" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">ยืนยันการลบข้อมูล</h4>
+            </div>
+            <div class="modal-body d-flex justify-content-center">
+                <i class='fas fa-trash-alt' style="font-size:54px;color:red;"></i>
+            </div>
+            <div class="modal-footer">
+                <button data-id="" class="btn btn-success yes">ยืนยัน</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+  $('.select2-multi').select2();
+});
+    $(document).ready(function () {
+        $(".delete").click(function () {
+            var id = $(this).data("id");
+            $(".yes").data("id", id);
+            var title = $(".yes").data("id");
+            $("#confirm").modal();
+        });
+        $(".yes").click(function () {
+            var id = $(this).data("id");
+            window.location.href = "/deletecategory/" + id;
+        });
+    });
+</script>
+{% endblock %}

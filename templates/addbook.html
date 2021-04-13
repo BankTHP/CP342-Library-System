@@ -16,18 +16,31 @@
                     <input type="text" id="name" name="title" class="form-control" placeholder="ชื่อหนังสือ">
                   </div>
                   <div class="form-group">
-                    <label for="lname">Floor :</label>
-                    <input type="text" id="Floor" class="form-control" name="floor" placeholder="floor">
+                    <label for="author">Choose a floor:</label>     
+                    <select id="floor" name="floor" form="floor">         
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
                   </div>
                   <div class="form-group">
-                    <label for="author">Choose a author:</label>
-                    
-                    <select id="a_id" name="a_id" form="author">
+                    <label for="author">Choose a author:</label>     
+                    <select id="a_id" name="a_id" form="a_id" class="form-control select2-multi" name="tags" multiple="multiple">
                       {% for i in data2 %}
-                      <option value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}</option>
+                      <option id="{{i[0]}}" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}</option>
                       {% endfor %}
                     </select>
                   </div>
+                  <div class="form-group">
+                    <label for="author">Choose a Category:</label>     
+                    <select id="a_id" name="a_id" form="a_id" class="form-control select2-multi" name="tags" multiple="multiple">
+                      {% for i in data3 %}
+                      <option id="{{i[0]}}" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}</option>
+                      {% endfor %}
+                    </select>
+                    <br>
                   <div class="form-group">
                     <label for="lname">Publisher :</label>
                     <input type="date" id="publisher" class="form-control" name="publisher" >
@@ -76,9 +89,9 @@
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
-                <td>{{i[0]}}</td>
-                <td>{{i[1]}}</td>
-                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[0]}} | {{i[1]}} {{i[2]}}</td>
+                <td>{{i[4]}}</td>
                 <td><a href="/updatebook/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
                     aria-hidden="true"></i>
                   <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
@@ -110,17 +123,22 @@
   </div>
 </div>
 <script>
-  $(document).ready(function () {
-    $(".delete").click(function () {
-      var id = $(this).data("id");
-      $(".yes").data("id", id);
-      var title = $(".yes").data("id");
-      $("#confirm").modal();
-    });
-    $(".yes").click(function () {
-      var id = $(this).data("id");
-      window.location.href = "/deletebook/" + id;
-    });
+$(function(){
+  $('.select2-multi').select2();
+});
+
+$(document).ready(function () {
+  $(".delete").click(function () {
+    var id = $(this).data("id");
+    $(".yes").data("id", id);
+    var title = $(".yes").data("id");
+    $("#confirm").modal();
   });
+  $(".yes").click(function () {
+    var id = $(this).data("id");
+    window.location.href = "/deletebook/" + id;
+    });
+});
 </script>
+
 {% endblock %}

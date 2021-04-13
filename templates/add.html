@@ -30,8 +30,13 @@
                     <input type="text" id="major" name="major" placeholder="Major" class="form-control">
                   </div>
                   <div class="form-group">
-                    <label for="fname">Year:</label>
-                    <input type="text" id="Year" class="form-control" name="Year" placeholder="Year">
+                    <label for="author">Choose a Year:</label>     
+                    <select id="year" name="year" form="year">         
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                    </select>
                   </div>
                   <br>
                   <div class="form-group">
@@ -54,12 +59,15 @@
         <div class="row">
           <div class="touch">
             <div class="card-body">
-              <h5 class="text-center">ค้นหารายชื่อนิสิต</h5>
               <div class="col-sm">
                 <div class="form">
+                  <label>ค้นหารายชื่อนิสิต</label>
                   <form action="/search" method="POST">
-                    <input type="text" name="input" class="form-control" />
-                    <br>
+                    <select id="a_id" name="a_id" form="a_id" class="form-control select2-multi" name="tags" multiple="multiple">
+                      {% for i in data %}
+                      <option id="{{i[0]}}" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}} | {{i[3]}} | {{i[4]}}</option>
+                      {% endfor %}
+                    </select>
                     <button type="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br>
@@ -72,7 +80,7 @@
               <th>รหัสนิสิต</th>
               <th>ชื่อ</th>
               <th>นามสกุล</th>
-              <th>Major</th>
+              <th>ภาควิชา</th>
               <th>ชั้นปีการศึกษา</th>
               <th></th>
             </tr>
@@ -113,6 +121,9 @@
   </div>
 </div>
 <script>
+  $(function(){
+  $('.select2-multi').select2();
+});
   $(document).ready(function () {
       $(".delete").click(function () {
           var id = $(this).data("id");

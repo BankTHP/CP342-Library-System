@@ -1,5 +1,4 @@
 {% extends 'base_layout.html' %}
-{% include 'includes/_navbaradmin.html' %}
 {% block body %}
 <div class="mt">
   <div class="row">
@@ -8,14 +7,105 @@
         <div class="card text-left">
           <div class="card-body">
             <div class="row">
-              
+              <div class="container">
+                <div class="card-deck row">
+                  <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="card">
+                      <div class="view overlay">
+                        <img class="card-img-top" src="https://www.metrocontinuingeducation.ca/wp-content/uploads/2019/01/in-class-students-high-school-696x462.jpg"
+                          alt="Card image cap">
+                        <a href="/addstudent">
+                          <div class="mask rgba-white-slight"></div>
+                        </a>
+                      </div>
+                      <div class="card-body">
+                        <h4 class="card-title">Student</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-6 col-md-4">  
+                    <div class="card mb-4">
+                      <div class="view overlay">
+                        <img class="card-img-top" src="https://static01.nyt.com/images/2019/12/17/books/review/17fatbooks/17fatbooks-superJumbo.jpg"
+                          alt="Card image cap">
+                        <a href="/addbook">
+                          <div class="mask rgba-white-slight"></div>
+                        </a>
+                      </div>
+                      <div class="card-body">
+                        <h4 class="card-title">Book</h4>                 
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="card mb-4">
+                      <div class="view overlay">
+                        <img class="card-img-top" src="https://www.mediabistro.com/wp-content/uploads/2014/09/best-selling-author.jpg"
+                          alt="Card image cap">
+                        <a href="#!">
+                          <div class="mask rgba-white-slight"></div>
+                        </a>
+                      </div>
+                      <div class="card-body">
+                        <h4 class="card-title">Author</h4> 
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="card">
+                      <div class="view overlay">
+                        <img class="card-img-top" src="https://ials.sas.ac.uk/sites/default/files/images/Library/Services/LS1384_0063_300_30.jpg"
+                          alt="Card image cap">
+                        <a href="#!">
+                          <div class="mask rgba-white-slight"></div>
+                        </a>
+                      </div>
+                      <div class="card-body">
+                        <h4 class="card-title">Borrower</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="card mb-4">
+                      <div class="view overlay">
+                        <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/14.jpg"
+                          alt="Card image cap">
+                        <a href="/searchbook">
+                          <div class="mask rgba-white-slight"></div>
+                        </a>
+                      </div>
+                      <div class="card-body">
+                        <h4 class="card-title">Search Book</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="card mb-4">
+                      <div class="view overlay">
+                        <img class="card-img-top" src="https://miro.medium.com/max/1838/1*YAaAjBYEDVI7ynN588t8fg.jpeg"
+                          alt="Card image cap">
+                        <a href="#!">
+                          <div class="mask rgba-white-slight"></div>
+                        </a>
+                      </div>
+                      <div class="card-body">
+                        <h4 class="card-title">Search Borrower</h4>      
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
 
-{% endblock %}
+  {% endblock %}
