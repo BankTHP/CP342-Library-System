@@ -82,7 +82,16 @@ def delete(id):
 
 @app.route('/search/<string:id>', methods=['POST','GET'])
 def search(id):
-    return(id)
+    if request.method == 'GET' :
+        try :
+            pg_del = ("SELECT * FROM student WHERE std_id ="+id+"") 
+            cur.execute(pg_del)
+        except (Exception, psycopg2.Error) as error:
+            print("Error selecting data from table book", error)
+        finally:
+            con.commit()
+            result = cur.fetchall()
+    return render_template("add.html",data = result)   
     
 
 
@@ -152,10 +161,7 @@ def searchauthor():
 ##############################################################################################################################
 
 @app.route('/addbook', methods=["POST","GET"])
-def addbook():
-    if request.method == 'POST' :
-        insertbookdb()
-        return redirect('/addbook')
+def addbook(): 
     if request.method == 'GET' :
         cur.execute("select DISTINCT * from author natural right join book order by book_id ")
         result = cur.fetchall()
@@ -164,9 +170,26 @@ def addbook():
         cur.execute("SELECT * FROM category_list")
         category = cur.fetchall()
         return render_template("addbook.html",data = result,data2 = author,data3 = category)
+    if request.method == 'POST' :
+        author_id = request.form["author_id"]
+        title = request.form["title"] 
+        floor = request.form["floor"]
+        publisher = request.form["publisher"]
+        category = request.form["c_id"]
+        print(category)
+    try :
+        cur.execute('insert into book (author_id,booktitle,floor,book_publisher) values (%s,%s,%s,%s)',(author_id,title,floor,publisher))
+    except (Exception, psycopg2.Error) as error: 
+        print("Error selecting data from table book", error)
+        return redirect('/addbook')
+    finally : 
+        con.commit()
+        return redirect('/addbook')
+        
+   
 
 def insertbookdb() :
-    author_id = request.form["a_id"]
+    author_id = request.form["author_id"]
     title = request.form["title"] 
     floor = request.form["floor"]
     publisher = request.form["publisher"]
@@ -192,15 +215,19 @@ def updatebook(id):
         return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate)
 
     if request.method == 'POST':
-        bookid = request.form["book_id"] 
-        title = request.form["title"] 
-        author_id = request.form["author_id"] 
-        floor = request.form["floor"] 
-        publisher = request.form["year"] 
-        pg_update = """Update book set author_id = {} , booktitle = {} , floor = {} , book_publisher = {} where book_id = {}"""
-        cur.execute(pg_update, (author_id,title,floor,publisher,bookid))
-        con.commit()
-        return redirect('/addbook')
+        try:
+            bookid = request.form["book_id"] 
+            title = request.form["title"] 
+            author_id = request.form["author_id"] 
+            floor = request.form["floor"] 
+            publisher = request.form["year"] 
+            pg_update = """Update book set author_id = {} , booktitle = {} , floor = {} , book_publisher = {} where book_id = {}"""
+            cur.execute(pg_update, (author_id,title,floor,publisher,bookid))
+        except (Exception, psycopg2.Error) as error:
+            print("Error selecting data from table book", error)
+        finally :
+            con.commit()
+            return redirect('/addbook')
         
 
 @app.route('/deletebook/<string:id>')
@@ -228,8 +255,8 @@ def searchbook():
 def searchbooks():
     if request.method == 'POST' :
         input = request.form["input"]
-        pg_del = ("SELECT * FROM book WHERE booktitle LIKE '"'%{}%'"'").format(input,input)
-        cur.execute(pg_del)
+        pg_del = ("SELECT * FROM book WHERE book_id = {}")
+        cur.execute(pg_del,input)
         result = cur.fetchall()
         return render_template("searchbook.html",data = result)   
     if request.method == 'GET' :

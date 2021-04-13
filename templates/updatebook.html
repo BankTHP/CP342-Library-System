@@ -14,15 +14,15 @@
                                     <h4>book id</h4>
                                     <input type="integer" placeholder="รหัสนิสิต" class="form-control"  name="book_id" value="{{ data[0][0]}}" /><br>
                                     <h4>author id</h4>
-                                    <select id="a_id" name="a_id" form="author">
+                                    <select id="a_id" name="author_id">
                                         {% for i in data2 %}
                                         <option disabled="disabled" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}</option>
                                         {% for j in data3 %}
-                                        <option value="{{i[0]}}">{{j[0]}} | {{j[1]}} {{j[2]}}</option>
+                                        <option value="{{j[0]}}">{{j[0]}} | {{j[1]}} {{j[2]}}</option>
                                         {% endfor %}
                                         {% endfor %}
                                       </select>
-                                    <input type="text" placeholder="book_id" class="form-control" name="author_id"value="{{data[0][1]}}" /><br>
+                                      <br><br>
                                     <h4>Title</h4>
                                     <input type="text" placeholder="title" class="form-control" name="title" value="{{data[0][2]}}" /><br>
                                     <h4>floor</h4>

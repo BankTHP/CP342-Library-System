@@ -1,6 +1,7 @@
 {% extends 'base_layout.html' %}
 {% include 'includes/_navbaradmin.html' %}
 {% block body %}
+
 <div class="mt">
   <div class="row">
     <div class="col-md-12">
@@ -63,7 +64,7 @@
                 <div class="form">
                   <label>ค้นหารายชื่อนิสิต</label>
                   <form>
-                    <select id="input" name="input" form="input" class="form-control select2-multi"
+                    <select id="input" name="input" form="input" class="js-example-basic-single"
                       name="tags" multiple="multiple">
                       {% for i in data %}
                       <option value="{{i[0]}}"> {{i[0]}} | {{i[1]}} {{i[2]}} | {{i[3]}} | {{i[4]}} </option>
@@ -125,10 +126,9 @@
 </div>
 <script>
   var selectedinput;
-  $(function () {
-    $('.select2-multi').select2();
-
-  });
+  $(document).ready(function() {
+    $('.js-example-basic-single').select2();
+});
   $('#input').change(function () {
     var input = $(this).val()
     selectedinput = input.join("-");

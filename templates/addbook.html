@@ -27,17 +27,17 @@
                   </div>
                   <div class="form-group">
                     <label for="author">Choose a author:</label>     
-                    <select id="a_id" name="a_id"  class="form-control select2-multi"  multiple="multiple">
-                      {% for i in data2 %}
-                      <option id="{{i[0]}}" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}</option>
+                    <select id="author_id" name="author_id"  class="form-control select2-multi"  multiple="multiple">
+                      {% for j in data2 %}
+                      <option id="{{j[0]}}" value="{{j[0]}}">{{j[0]}} | {{j[1]}} {{j[2]}}</option>
                       {% endfor %}
                     </select>
                   </div>
                   <div class="form-group">
                     <label for="author">Choose a Category:</label>     
-                    <select id="c_id" name="c_id"  class="form-control select2-multi"  multiple="multiple">
+                    <select id="c_id" name="c_id"  class="form-control js-example-tokenizer"  multiple="multiple">
                       {% for k in data3 %}
-                      <option id="{{k[0]}}" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}</option>
+                      <option id="{{k[0]}}" value="{{k[0]}}">{{k[0]}} | {{k[1]}} {{k[2]}}</option>
                       {% endfor %}
                     </select>
                     <br>
@@ -125,6 +125,9 @@
 <script>
 $(function(){
   $('.select2-multi').select2();
+});
+$(function(){
+  $('.js-example-tokenizer').select2();
 });
 
 $(document).ready(function () {
