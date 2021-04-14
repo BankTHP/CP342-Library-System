@@ -14,7 +14,7 @@
                 <form action="/addstudent" method="post">
                   <div class="form-group">
                     <label for="fname">ID:</label>
-                    <input type="text" class="form-control" id="s_id" name="s_id" placeholder="ID">
+                    <input type="number" class="form-control" id="s_id" name="s_id" placeholder="ID">
                   </div>
 
                   <div class="form-group">
@@ -64,25 +64,25 @@
                 <div class="form">
                   <label>ค้นหารายชื่อนิสิต</label>
                   <form>
-                    <input type="text" id="myinput" class="form-control"onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+                    <input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
+                      placeholder="Search for names..">
                   </form>
-                  <button class="btn btn-primary" onclick="send()">Submit</button>
                   <br>
                 </div>
               </div>
             </div>
           </div>
-          <table id="Testtable" class="table table-bordered  table-success">
+          <table id="Searchtable" class="table table-bordered  table-success">
             <thead>
-            <tr>
-              <th>รหัสนิสิต</th>
-              <th>ชื่อ</th>
-              <th>นามสกุล</th>
-              <th>ภาควิชา</th>
-              <th>ชั้นปีการศึกษา</th>
-              <th></th>
-            </tr>
-          </thead>
+              <tr>
+                <th>รหัสนิสิต</th>
+                <th>ชื่อ</th>
+                <th>นามสกุล</th>
+                <th>ภาควิชา</th>
+                <th>ชั้นปีการศึกษา</th>
+                <th></th>
+              </tr>
+            </thead>
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
@@ -99,7 +99,7 @@
               </tr>
               {% endfor %}
             </tbody>
-            </table>
+          </table>
         </div>
       </div>
     </div>
@@ -123,25 +123,26 @@
   </div>
 </div>
 <script>
-function myFunction() {
-  var filter = event.target.value.toUpperCase();
-    var rows = document.querySelector("#Testtable tbody").rows;
-    
-    for (var i = 0; i < rows.length; i++) {
-        var firstCol = rows[i].cells[0].textContent.toUpperCase();
-        var secondCol = rows[i].cells[1].textContent.toUpperCase();
-        var tCol = rows[i].cells[2].textContent.toUpperCase();
-        var fCol = rows[i].cells[3].textContent.toUpperCase();
-        var fvCol = rows[i].cells[4].textContent.toUpperCase();
-        if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol.indexOf(filter) > -1 || fvCol.indexOf(filter) > -1) {
-            rows[i].style.display = "";
-        } else {
-            rows[i].style.display = "none";
-        }      
-    }
-}
+  function myFunction() {
+    var filter = event.target.value.toUpperCase();
+    var rows = document.querySelector("#Searchtable tbody").rows;
 
-$(document).ready(function () {
+    for (var i = 0; i < rows.length; i++) {
+      var firstCol = rows[i].cells[0].textContent.toUpperCase();
+      var secondCol = rows[i].cells[1].textContent.toUpperCase();
+      var tCol = rows[i].cells[2].textContent.toUpperCase();
+      var fCol = rows[i].cells[3].textContent.toUpperCase();
+      var fvCol = rows[i].cells[4].textContent.toUpperCase();
+      if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol
+        .indexOf(filter) > -1 || fvCol.indexOf(filter) > -1) {
+        rows[i].style.display = "";
+      } else {
+        rows[i].style.display = "none";
+      }
+    }
+  }
+
+  $(document).ready(function () {
     $(".delete").click(function () {
       var id = $(this).data("id");
       $(".yes").data("id", id);
@@ -153,6 +154,5 @@ $(document).ready(function () {
       window.location.href = "/delete/" + id;
     });
   });
- 
 </script>
 {% endblock %}

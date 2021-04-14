@@ -43,30 +43,29 @@
                 <div class="row">
                     <div class="touch">
                         <div class="card-body">
-                            <h5 class="text-center">ค้นหาผู้แต่ง</h5>
+                            <h5 class="text-center">ค้นหาหมวดหมู่</h5>
                             <div class="col-sm">
                                 <div class="form">
-                                    <form action="/searchauthor" method="POST">
-                                        <input type="text" name="input" class="form-control select2-multi" name="tags" multiple="multiple" />
-                                        <br>
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </form>
+                                    <form >
+                                        <input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
+                                          placeholder="Search for names.." title="Type in a name">
+                                      </form>
                                     <br>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <table class="table table-bordered  table-success">
+                    <table id="Searchtable"class="table table-bordered  table-success">
+                        <thead>
                         <tr>
-                            <th>ID ผู้แต่ง</th>
-                            <th>ชื่อผู้แต่ง</th>
-                            <th>นามสกุลผู้แต่ง</th>
+                            <th>หมวดหมู่หนังสือ</th>
+                            <th>รายละเอียดหมวดหมู่หนังสือ</th>
                             <th></th>
                         </tr>
+                        </thead>
                         <tbody style="background-color: white">
                             {% for i in data %}
                             <tr>
-                                <td>{{i[0]}}</td>
                                 <td>{{i[1]}}</td>
                                 <td>{{i[2]}}</td>
                                 <td><a href="/updatecategory/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i
@@ -76,6 +75,7 @@
                             </tr>
                             {% endfor %}
                         </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -99,9 +99,9 @@
     </div>
 </div>
 <script>
-$(function(){
-  $('.select2-multi').select2();
-});
+    $(function () {
+        $('.select2-multi').select2();
+    });
     $(document).ready(function () {
         $(".delete").click(function () {
             var id = $(this).data("id");
@@ -114,5 +114,20 @@ $(function(){
             window.location.href = "/deletecategory/" + id;
         });
     });
+
+    function myFunction() {
+        var filter = event.target.value.toUpperCase();
+        var rows = document.querySelector("#Searchtable tbody").rows;
+
+        for (var i = 0; i < rows.length; i++) {
+            var name = rows[i].cells[0].textContent.toUpperCase();
+            var title = rows[i].cells[1].textContent.toUpperCase();
+            if (name.indexOf(filter) > -1 || title.indexOf(filter) > -1 ) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
 </script>
 {% endblock %}

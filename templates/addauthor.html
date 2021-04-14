@@ -44,35 +44,39 @@
               <h5 class="text-center">ค้นหาผู้แต่ง</h5>
               <div class="col-sm">
                 <div class="form">
-                  <form action="/searchauthor" method="POST">
-                    <input type="text" name="input" class="form-control" />
-                    <br>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                  <form>
+                    <input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
+                      placeholder="Search for names.." title="Type in a name">
                   </form>
                   <br>
                 </div>
               </div>
             </div>
           </div>
-          <table class="table table-bordered  table-success">
-            <tr>
-              <th>ID ผู้แต่ง</th>
-              <th>ชื่อผู้แต่ง</th>
-              <th>นามสกุลผู้แต่ง</th>
-              <th></th>
-            </tr>
+          <table id="Searchtable" class="table table-bordered  table-success">
+            <thead>
+              <tr>
+                <th>ID ผู้แต่ง</th>
+                <th>ชื่อผู้แต่ง</th>
+                <th>นามสกุลผู้แต่ง</th>
+                <th></th>
+              </tr>
+            </thead>
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
                 <td>{{i[0]}}</td>
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}}</td>
-                <td><a href="/updateauthor/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil" aria-hidden="true"></i>
-                    <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm" data-toggle="confirm">ลบ</i></td>
+                <td><a href="/updateauthor/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
+                    aria-hidden="true"></i>
+                  <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
+                    data-toggle="confirm">ลบ</i></td>
 
               </tr>
               {% endfor %}
             </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -96,17 +100,31 @@
   </div>
 </div>
 <script>
+  function myFunction() {
+    var filter = event.target.value.toUpperCase();
+    var rows = document.querySelector("#Searchtable tbody").rows;
+
+    for (var i = 0; i < rows.length; i++) {
+      var firstCol = rows[i].cells[1].textContent.toUpperCase();
+      var secondCol = rows[i].cells[2].textContent.toUpperCase();
+      if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 ) {
+        rows[i].style.display = "";
+      } else {
+        rows[i].style.display = "none";
+      }
+    }
+  }
   $(document).ready(function () {
-      $(".delete").click(function () {
-          var id = $(this).data("id");
-          $(".yes").data("id", id);
-          var title = $(".yes").data("id");
-          $("#confirm").modal();
-      });
-      $(".yes").click(function () {
-          var id = $(this).data("id");
-          window.location.href = "/deleteauthor/" + id;
-      });
+    $(".delete").click(function () {
+      var id = $(this).data("id");
+      $(".yes").data("id", id);
+      var title = $(".yes").data("id");
+      $("#confirm").modal();
+    });
+    $(".yes").click(function () {
+      var id = $(this).data("id");
+      window.location.href = "/deleteauthor/" + id;
+    });
   });
 </script>
 {% endblock %}

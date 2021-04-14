@@ -4,7 +4,7 @@ import psycopg2
 
 con=psycopg2.connect(
     host='localhost',
-    database='CP342_DATABASE',
+    database='CP342',
     user='postgres',
     password='0957132960'
     )
@@ -80,25 +80,6 @@ def delete(id):
         con.commit()
         return  redirect('/addstudent')
 
-@app.route('/search/<string:id>', methods=['POST','GET'])
-def search(id):
-    if request.method == 'GET' :
-        try :
-            pg_del = ("SELECT * FROM student WHERE std_id ="+id+"") 
-            cur.execute(pg_del)
-        except (Exception, psycopg2.Error) as error:
-            print("Error selecting data from table book", error)
-        finally:
-            con.commit()
-            result = cur.fetchall()
-    return render_template("add.html",data = result)   
-    
-
-
-
-    
-
-
 
 ##############################################################################################################################AUTHOR
 
@@ -149,25 +130,17 @@ def deleteauthor(id):
         con.commit()
         return redirect('/addauthor')
 
-@app.route('/searchauthor', methods=["POST","GET"])
-def searchauthor():
-    if request.method == 'POST' :
-        input = request.form["input"]
-        pg_del = ("SELECT * FROM author WHERE author_firstname LIKE '"'%{}%'"'OR author_lastname LIKE '"'%{}%'"'").format(input,input)
-        cur.execute(pg_del)
-        result = cur.fetchall()
-    return render_template("addauthor.html",data = result)   
-
 ##############################################################################################################################
 
 @app.route('/addbook', methods=["POST","GET"])
 def addbook(): 
+    
     if request.method == 'GET' :
-        cur.execute("select DISTINCT * from author natural right join book order by book_id ")
+        cur.execute("SELECT * FROM author NATURAL JOIN book") 
         result = cur.fetchall()
-        cur.execute("SELECT * FROM author order by author_id")
+        cur.execute("SELECT * FROM author")
         author = cur.fetchall()
-        cur.execute("SELECT * FROM category_list")
+        cur.execute("SELECT * FROM categorylist")
         category = cur.fetchall()
         return render_template("addbook.html",data = result,data2 = author,data3 = category)
     if request.method == 'POST' :
@@ -175,33 +148,22 @@ def addbook():
         title = request.form["title"] 
         floor = request.form["floor"]
         publisher = request.form["publisher"]
-        category = request.form["c_id"]
+        category = request.form["c_id"].split("-")
         print(category)
     try :
-        cur.execute('insert into book (author_id,booktitle,floor,book_publisher) values (%s,%s,%s,%s)',(author_id,title,floor,publisher))
+        insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,"BookStatus") values (%s,%s,%s,%s,%s) RETURNING book_id """
+        cur.execute(insertbook, (author_id,title,floor,publisher,0))
+        print(cur.fetchone()[0])
+        con.commit()
+        return redirect('/addbook')
     except (Exception, psycopg2.Error) as error: 
         print("Error selecting data from table book", error)
+        con.commit()
         return redirect('/addbook')
     finally : 
         con.commit()
         return redirect('/addbook')
-        
-   
-
-def insertbookdb() :
-    author_id = request.form["author_id"]
-    title = request.form["title"] 
-    floor = request.form["floor"]
-    publisher = request.form["publisher"]
-    category = request.form["c_id"]
-    try :
-        cur.execute('insert into book (author_id,booktitle,floor,book_publisher) values (%s,%s,%s,%s)',(author_id,title,floor,publisher))
-    except (Exception, psycopg2.Error) as error: 
-            print("Error selecting data from table book", error)
-            return redirect('/addbook')
-    finally : 
-        con.commit()
-        return redirect('/addbook')
+    
 
 @app.route('/updatebook/<string:id>',methods=["GET", "POST"])
 def updatebook(id):
@@ -221,6 +183,7 @@ def updatebook(id):
             author_id = request.form["author_id"] 
             floor = request.form["floor"] 
             publisher = request.form["year"] 
+            print(author_id)
             pg_update = """Update book set author_id = {} , booktitle = {} , floor = {} , book_publisher = {} where book_id = {}"""
             cur.execute(pg_update, (author_id,title,floor,publisher,bookid))
         except (Exception, psycopg2.Error) as error:
@@ -233,6 +196,7 @@ def updatebook(id):
 @app.route('/deletebook/<string:id>')
 def deletebook(id):
     try : 
+        print(id)
         cur.execute("DELETE FROM book WHERE book_id="+id+"")
     except (Exception, psycopg2.Error) as error: 
         print("Error selecting data from table book", error)
@@ -240,16 +204,6 @@ def deletebook(id):
     finally : 
         con.commit()
         return  redirect('/addbook')
-
-
-@app.route('/searchbook', methods=["POST","GET"])
-def searchbook():
-    if request.method == 'POST' :
-        input = request.form["input"]
-        pg_del = """"SELECT * FROM book WHERE author_firstname LIKE '%{}%'OR author_lastname LIKE '%{}%' """
-        cur.execute(pg_del,input,input)
-        result = cur.fetchall()
-    return render_template("addbook.html",data = result)   
 
 @app.route('/searchbooks', methods=["POST","GET"])
 def searchbooks():
@@ -270,7 +224,7 @@ def addcaterory():
         try : 
             name = request.form["name"] 
             des = request.form["des"] 
-            addstudent = """insert into category_list (categoryname,des) values (%s,%s)"""
+            addstudent = """insert into categorylist (categoryname,des) values (%s,%s)"""
             cur.execute(addstudent,(name,des))
             print("สำเร็จ") 
         except (Exception, psycopg2.Error) as error:     
@@ -282,10 +236,78 @@ def addcaterory():
 
     if request.method == 'GET' : 
 
-        cur.execute("SELECT * FROM category_list")
+        cur.execute("SELECT * FROM categorylist")
 
         result = cur.fetchall()
 
     return render_template("addcategory.html",data = result)   
 
+
+
+@app.route('/addborrower', methods=["POST","GET"])
+def borrower():
+    if request.method == 'POST' :
+        try : 
+            id = request.form["std_id"]
+            print(id)           
+            borrowerdate = request.form["borrowerdate"] 
+            print(borrowerdate)              
+            returndate = request.form["returndate"]  
+            print(returndate)
+            books = request.form["book"]
+            print(books)
+
+            # addborrower = """insert into borrow (std_id,returndate,borrowerdate) values (%s,%s,%s)"""
+            # cur.execute(addborrower,(id,returndate,borrowerdate))
+
+        except (Exception, psycopg2.Error) as error:     
+            print("Error จ้า", error)
+            return redirect('/addborrower')
+        finally : 
+            con.commit() 
+            return redirect('/addborrower') 
+
+    if request.method == 'GET' : 
+
+        cur.execute("SELECT * FROM borrower ORDER BY borrower_id")
+        result = cur.fetchall()
+        cur.execute("SELECT * FROM student ORDER by std_id")
+        stdresult = cur.fetchall()
+        cur.execute("SELECT * FROM book NATURAL JOIN author ORDER by book_id")
+        bookresult = cur.fetchall()
+
+    return render_template("addborrower.html",data = result,data2 = stdresult,data3 =bookresult)   
+
+
+@app.route('/updateborrower/<string:id>',methods=["GET", "POST"])
+def updateborrower(id):
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM student WHERE std_id ="+id+"")
+        update = cur.fetchall()
+        return render_template("update.html",data = update)
+    if request.method == 'POST':
+        try : 
+            id = request.form["std_id"] 
+            name = request.form["std_firstname"] 
+            lname = request.form["std_lastname"] 
+            major = request.form["major"]
+            year = request.form["Year"]
+            pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
+            cur.execute(pg_update, (name,lname,major,year, id))
+        except (Exception, psycopg2.Error) as error:
+            print("Error selecting data from table book", error)
+            return redirect('/addstudent')
+        finally:
+            con.commit()
+            return redirect('/addstudent')
+
+@app.route('/deleteborrower/<string:id>')
+def deleteborrower(id):
+    try :
+        cur.execute("DELETE FROM student WHERE std_id="+id+"")
+    except (Exception, psycopg2.Error) as error:
+        print("Error selecting data from table book", error)
+    finally:
+        con.commit()
+        return  redirect('/addstudent')
 app.run(debug=True,use_reloader=True)

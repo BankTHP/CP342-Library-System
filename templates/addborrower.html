@@ -10,43 +10,30 @@
             <h5 class="text-center">เพิ่มหนังสือ</h5>
             <div class="col-sm">
               <div class="form">
-                <form action="/addbook" method="post">
+                <form action="/addborrower" method="post">
                   <div class="form-group">
-                    <label >ชื่อหนังสือ :</label>
-                    <input type="text" id="title" name="title" class="form-control" placeholder="ชื่อหนังสือ">
-                  </div>
-                  <div class="form-group">
-                    <label  for="author">Choose a floor:</label>     
-                    <select id="floor" name="floor">         
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="author">Choose a author:</label>
-                    <select id="author_id" name="author_id"  class="form-control select2-multi">
+                    <label for="std">รหัสนิสิต:</label>
+                    <select id="std_id" name="std_id"  class="form-control select2-multi">
                       {% for j in data2 %}
                       <option value="{{j[0]}}">{{j[0]}} | {{j[1]}} {{j[2]}}</option>
                       {% endfor %}
                     </select>
                   </div>
                   <div class="form-group">
-                    <label>Choose a Category:</label>
-                    <select id="c_id" name="c_id"  class="form-control select2-multi"  multiple="multiple">
+                    <label for="std">หนังสือ :</label>
+                    <select id="book" name="book"  class="form-control select2-multi"  multiple="multiple">
                       {% for k in data3 %}
-                      <option value="{{k[0]}}">{{k[0]}} | {{k[1]}} {{k[2]}}</option>
+                      <option value="{{k[1]}}">{{k[1]}} | {{k[2]}} | {{k[6]}} {{k[7]}}</option>
                       {% endfor %}
-                    </select>                    
-                    <br>
-                  <div class="form-group">
-                    <label for="lname">Publisher :</label>
-                    <input type="date" id="publisher" class="form-control" name="publisher" >
+                    </select>
                   </div>
-                  <br>
                   <div class="form-group">
+                    <label for="lname">BORROWER DATE :</label>
+                    <input type="date" id="borrowerdate" class="form-control" name="borrower" >
+                  </div>
+                  <div class="form-group">
+                    <label for="lname">RETURN DATE :</label>
+                    <input type="date" id="returndate" class="form-control" name="return" >
                   </div>
                 </form> 
                 <br>
@@ -65,7 +52,7 @@
         <div class="row">
           <div class="touch">
             <div class="card-body">
-              <h5 class="text-center">ค้นหาหนังสือ</h5>
+              <h5 class="text-center">ค้นหาผู้ยืม</h5>
               <div class="col-sm">
                 <div class="form">
                    <form >
@@ -80,25 +67,22 @@
           <table id="Searchtable"class="table table-bordered  table-success">
             <thead>
             <tr>
-              <th>ID หนังสือ</th>
-              <th>ชื่อนักแต่ง</th>
-              <th>ชื่อหนังสือ</th>
-              <th>วันที่พิมพ์</th>
+              <th>รหัสนิสิต</th>
+              <th>วันที่คืน</th>
+              <th>วันที่ยืม</th>
               <th></th>
             </tr>
           </thead>
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
-                <td>{{i[3]}}</td>
-                <td>{{i[1]}} {{i[2]}}</td>
-                <td>{{i[4]}}</td>
-                <td>{{i[6]}}</td>
-                <td><a href="/updatebook/{{i[3]}}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}} </td>
+                <td>{{i[3]}} </td>        
+                <td><a href="/updateborrower/{{i[0]}}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
                     aria-hidden="true"></i>
                   <button data-id="{{i[3]}}" class="btn btn-danger delete" data-target="#confirm"
                     data-toggle="confirm">ลบ</i></td>
-
               </tr>
               {% endfor %}
             </tbody>
@@ -154,41 +138,36 @@ $(document).ready(function () {
   });
   $(".yes").click(function () {
     var id = $(this).data("id");
-    window.location.href = "/deletebook/" + id;
+    window.location.href = "/deleteborrower/" + id;
     });
 });
-var c_ids = 0;
-var title = "TestTitle";
-var floor = 1;
-var author_id = 0;
-var publisher = "Testpublisher";
+var std_id = 1;
+var borrowerdate = "TestTitle";
+var returndate = "TestTitle";
 
-$('#title').change(function(){
-    title = $(this).val();
+
+$('#std_id').change(function(){
+    std_id = $(this).val();
 })
-$('#floor').change(function(){
-  floor = $(this).val();
+$('#borrowerdate').change(function(){
+    borrowerdate = $(this).val();
 })
-$('#author_id').change(function(){
-  author_id = $(this).val();
+$('#returndate').change(function(){
+    returndate = $(this).val();
 })
-$('#publisher').change(function(){
-  publisher = $(this).val();
-})
-$('#c_id').change(function(){
-    var c_id = $(this).val();
-    c_ids = c_id.join("-");
+$('#book').change(function(){
+    var book = $(this).val();
+    bookresult = book.join("-");
 })
 
 $("#SubmitBtn").click(function(){
-  $.post("addbook",{
-    title:title,
-    floor:floor,
-    author_id:author_id,
-    c_id:c_ids,
-    publisher:publisher
+  $.post("addborrower",{
+    std_id :std_id,
+    borrowerdate : borrowerdate,
+    returndate :returndate,
+    book : bookresult
   });
-  window.location.href = '/addbook';
+  window.location.href = '/addborrower';
 })
 
 
