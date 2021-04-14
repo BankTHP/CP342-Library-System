@@ -136,26 +136,30 @@ def deleteauthor(id):
 def addbook(): 
     
     if request.method == 'GET' :
-        cur.execute("SELECT * FROM author NATURAL JOIN book") 
-        result = cur.fetchall()
+        result = cur.execute("SELECT * FROM author NATURAL JOIN book ORDER BY book_id").fetchall()  
         cur.execute("SELECT * FROM author")
-        author = cur.fetchall()
-        cur.execute("SELECT * FROM categorylist")
-        category = cur.fetchall()
-        return render_template("addbook.html",data = result,data2 = author,data3 = category)
+        authorresult = cur.execute("SELECT * FROM author").fetchall()
+        cur.execute("SELECT * FROM categorylist ORDER BY cat_id")
+        categoryresult = cur.fetchall()
+        return render_template("addbook.html",data = result,data2 = authorresult,data3 = categoryresult)
+
     if request.method == 'POST' :
         author_id = request.form["author_id"]
         title = request.form["title"] 
         floor = request.form["floor"]
         publisher = request.form["publisher"]
         category = request.form["c_id"].split("-")
-        print(category)
     try :
         insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,"BookStatus") values (%s,%s,%s,%s,%s) RETURNING book_id """
         cur.execute(insertbook, (author_id,title,floor,publisher,0))
-        print(cur.fetchone()[0])
         con.commit()
-        return redirect('/addbook')
+        x = cur.fetchone()[0]
+        print(x) 
+        for i in range(1,len(category)+1) :
+            goryinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
+            cur.execute(goryinsert, (x,i))
+            con.commit()
+        return redirect('/')
     except (Exception, psycopg2.Error) as error: 
         print("Error selecting data from table book", error)
         con.commit()
@@ -242,6 +246,38 @@ def addcaterory():
 
     return render_template("addcategory.html",data = result)   
 
+@app.route('/updatecategory/<string:id>',methods=["GET", "POST"])
+def updatecategory(id):
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM categorylist WHERE cat_id ="+id+"")
+        update = cur.fetchall()
+        return render_template("updatecategory.html",data = update)
+    if request.method == 'POST':
+        try : 
+            id = request.form["std_id"] 
+            name = request.form["std_firstname"] 
+            lname = request.form["std_lastname"] 
+            major = request.form["major"]
+            year = request.form["Year"]
+            pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
+            cur.execute(pg_update, (name,lname,major,year, id))
+        except (Exception, psycopg2.Error) as error:
+            print("Error selecting data from table book", error)
+            return redirect('/addstudent')
+        finally:
+            con.commit()
+            return redirect('/addstudent')
+
+@app.route('/deletecategory/<string:id>')
+def deletecategory(id):
+    try :
+        cur.execute("DELETE FROM categorylist WHERE cat_id="+id+"")
+    except (Exception, psycopg2.Error) as error:
+        print("Error selecting data from table book", error)
+    finally:
+        con.commit()
+        return  redirect('/addcategory')
+app.run(debug=True,use_reloader=True)
 
 
 @app.route('/addborrower', methods=["POST","GET"])
