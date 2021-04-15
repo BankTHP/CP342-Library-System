@@ -16,15 +16,13 @@ borrowerdate = '2021-04-01'
 returndate = '2021-04-02'
 statusBook = 0 
 books = '34-36'.split('-')
-for i in range(len(books)) :
-    print(books[1])
-id = 9
-addborrower = """DELETE FROM borrower where borrower_id = %s """
-cur.execute(addborrower,str(id))
-test = """ALTER SEQUENCE author_author_id_seq RESTART WITH {}""".format(id-1)
-cur.execute(test)
+id = 10
+delstd = """DELETE FROM borrowers_books WHERE borrower_id = %s """
+cur.execute(delstd,id)
 con.commit()
-
+delstd2 = """DELETE FROM borrower WHERE borrower_id = %s """
+cur.execute(delstd2,id)
+con.commit()
 
     
 

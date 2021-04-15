@@ -66,20 +66,6 @@
                   <form>
                     <input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
                       placeholder="Search for names..">
-                      <br>
-                    <label>เลือกจำนวนตาราง</label>
-                    <select class="form-control" id="sel1">
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>1000</option>
-                      <option>2000</option>
-                      <option>5000</option>
-                      <option>10000</option>
-                      <option>20000</option>
-                      <option>40000</option>
-                    </select>
-                  </form>
                   <br>
                 </div>
               </div>
@@ -106,7 +92,7 @@
                 <td>{{i[4]}}</td>
                 <td><a href="/update/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
                     aria-hidden="true"></i>
-                  <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
+                    <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
                     data-toggle="confirm">ลบ</i></td>
 
               </tr>
@@ -136,6 +122,8 @@
     </div>
   </div>
 </div>
+
+
 <script>
   function myFunction() {
     var filter = event.target.value.toUpperCase();
@@ -168,24 +156,7 @@
       window.location.href = "/delete/" + id;
     });
   });
-  function act() {
-    var num = $( "#sel1 option:selected" ).text(); 
-    $('#Searchtable tr').each(function(i, row) {
-        if(num < 0){
-            $(this).css('display','none');
-        } else {
-            num = num - 1;
-            $(this).css('display','table-row');
-        }
-    });
-}
-
-$(function() {
-    act();
-});
-
-$( "#sel1" ).change(function() {
-    act();
-});
 </script>
+
+
 {% endblock %}

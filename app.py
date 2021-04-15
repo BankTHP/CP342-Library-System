@@ -72,9 +72,20 @@ def update(id):
 @app.route('/delete/<string:id>')
 def delete(id):
     try :
-        cur.execute("DELETE FROM student WHERE std_id="+id+"")
+        cur.execute("SELECT * FROM borrower WHERE std_id ="+id+"")
+        x = cur.fetchall()
+        for i in range(len(x)):
+            cur.execute ("DELETE FROM borrowers_books WHERE borrower_id ="+str(x[i][0])+"")
+            con.commit()
+        cur.execute("DELETE FROM borrower WHERE std_id ="+id+"")
+        con.commit()
+        cur.execute("DELETE FROM student WHERE std_id ="+id+"")
+        con.commit()
+
+        
+
     except (Exception, psycopg2.Error) as error:
-        print("Error selecting data from table book", error)
+        print(error)
     finally:
         con.commit()
         return  redirect('/addstudent')
@@ -137,10 +148,13 @@ def addbook():
     if request.method == 'GET' :
         cur.execute("SELECT * FROM author NATURAL JOIN book ORDER BY book_id") 
         result = cur.fetchall()
+        con.commit()
         cur.execute("SELECT * FROM author")
         authorresult = cur.fetchall() 
+        con.commit()
         cur.execute("SELECT * FROM categorylist ORDER BY cat_id")
         categoryresult = cur.fetchall()
+        con.commit()
         return render_template("addbook.html",data = result,data2 = authorresult,data3 = categoryresult)
 
     if request.method == 'POST' :
@@ -154,9 +168,9 @@ def addbook():
         cur.execute(insertbook, (author_id,title,floor,publisher,0))
         con.commit()
         x = cur.fetchone()[0]   
-        for i in range(1,len(category)+1) :
+        for i in range(category):
             goryinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
-            cur.execute(goryinsert, (x,i))
+            cur.execute(goryinsert, (x,category[i]))
         con.commit()
         return redirect('/addbook')
     
@@ -202,7 +216,7 @@ def deletebook(id):
 
 @app.route('/searchbooks')
 def searchbooks():   
-    searchbooks = """SELECT * FROM category natural join categorylist natural join book natural join author;"""
+    searchbooks = """SELECT * FROM  book natural join author order by book_id;"""
     cur.execute(searchbooks)
     result = cur.fetchall()
     return render_template("searchbook.html",data = result)
@@ -301,10 +315,10 @@ def addborrowers():
     return render_template("addborrower.html",data = result,data2 = stdresult,data3 =bookresult)   
 
 def updatebook(books,x) :
-    print(books)
     for i in range(len(books)) :
         updatebook = """UPDATE book SET "BookStatus"= 1 WHERE book_id = {} """.format(books[i])
         cur.execute(updatebook)
+        con.commit()
         borrowbook = """insert into borrowers_books (book_id, borrower_id) values (%s,%s)"""
         cur.execute(borrowbook,(books[i],x))
         con.commit()

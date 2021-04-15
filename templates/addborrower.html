@@ -124,9 +124,9 @@ function myFunction() {
     var rows = document.querySelector("#Searchtable tbody").rows;
     
     for (var i = 0; i < rows.length; i++) {
-        var name = rows[i].cells[1].textContent.toUpperCase();
-        var title = rows[i].cells[2].textContent.toUpperCase();
-        var date = rows[i].cells[3].textContent.toUpperCase();
+        var name = rows[i].cells[0].textContent.toUpperCase();
+        var title = rows[i].cells[1].textContent.toUpperCase();
+        var date = rows[i].cells[2].textContent.toUpperCase();
         if (name.indexOf(filter) > -1 || title.indexOf(filter) > -1 || date.indexOf(filter) > -1) {
             rows[i].style.display = "";
         } else {

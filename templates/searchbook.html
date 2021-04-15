@@ -24,8 +24,6 @@
             <thead>
               <tr>
                 <th>ชื่อหนังสือ</th>
-                <th>หมวดหมู่หนังสือ</th>
-                <th>รายละเอียดหมวดหมู่หนังสือ</th>
                 <th>ชื่อผู้แต่ง</th>
                 <th>นามสกุลผู้แต่ง</th>
                 <th>สถานะหนังสือ</th>
@@ -34,14 +32,13 @@
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
-                <td>{{i[5]}}</td>
-                <td>{{i[3]}}</td>
-                <td>{{i[4]}}</td>
-                <td>{{i[9]}}</td>
-                <td>{{i[10]}}</td>
-                {%if i[8] == 0%}
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                {%if i[5] == 0%}
                 <td>ยังไม่ถูกยืม</td>
-                {%elif i[8] == 1%}
+                {%elif i[5] == 1%}
                 <td>ถูกยืมแล้ว</td>
                 {%endif%}
                 
@@ -66,10 +63,9 @@
       var secondCol = rows[i].cells[1].textContent.toUpperCase();
       var tCol = rows[i].cells[2].textContent.toUpperCase();
       var fCol = rows[i].cells[3].textContent.toUpperCase();
-      var fvCol = rows[i].cells[4].textContent.toUpperCase();
-      var sCol = rows[i].cells[5].textContent.toUpperCase();
+      
       if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol
-        .indexOf(filter) > -1 || fvCol.indexOf(filter) > -1 || sCol.indexOf(filter) > -1) {
+        .indexOf(filter) > -1 ) {
         rows[i].style.display = "";
       } else {
         rows[i].style.display = "none";
