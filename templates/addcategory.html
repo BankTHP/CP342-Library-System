@@ -46,37 +46,71 @@
                             <h5 class="text-center">ค้นหาหมวดหมู่</h5>
                             <div class="col-sm">
                                 <div class="form">
-                                    <form >
+                                    <form>
                                         <input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
-                                          placeholder="Search for names.." title="Type in a name">
-                                      </form>
+                                            placeholder="Search for names.." title="Type in a name">
+                                    </form>
                                     <br>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <table id="Searchtable"class="table table-bordered  table-success">
+                    <table id="Searchtable" class="table table-bordered  table-success">
                         <thead>
-                        <tr>
-                            <th>หมวดหมู่หนังสือ</th>
-                            <th>รายละเอียดหมวดหมู่หนังสือ</th>
-                            <th></th>
-                        </tr>
+                            <tr>
+                                <th>หมวดหมู่หนังสือ</th>
+                                <th>รายละเอียดหมวดหมู่หนังสือ</th>
+                                <th></th>
+                            </tr>
                         </thead>
                         <tbody style="background-color: white">
                             {% for i in data %}
                             <tr>
                                 <td>{{i[1]}}</td>
                                 <td>{{i[2]}}</td>
+                                <td><div class="text-center">
+                                    <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Launch
+                                      Modal Login Form</a>
+                                  </div></td>
                                 <td><a href="/updatecategory/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i
                                         class="fa fa-pencil" aria-hidden="true"></i>
-                                    <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
+                                    <button data-id="{{i[0]}}" class="btn btn-danger delete" data-target="#confirm"
                                         data-toggle="confirm">ลบ</i></td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3">
+                <div class="md-form mb-5">
+                    <i class="fas fa-envelope prefix grey-text"></i>
+                    <input type="email" id="defaultForm-email" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="defaultForm-email">Your email</label>
+                </div>
+
+                <div class="md-form mb-4">
+                    <i class="fas fa-lock prefix grey-text"></i>
+                    <input type="password" id="defaultForm-pass" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="defaultForm-pass">Your password</label>
+                </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-default">Login</button>
             </div>
         </div>
     </div>
@@ -122,7 +156,7 @@
         for (var i = 0; i < rows.length; i++) {
             var name = rows[i].cells[0].textContent.toUpperCase();
             var title = rows[i].cells[1].textContent.toUpperCase();
-            if (name.indexOf(filter) > -1 || title.indexOf(filter) > -1 ) {
+            if (name.indexOf(filter) > -1 || title.indexOf(filter) > -1) {
                 rows[i].style.display = "";
             } else {
                 rows[i].style.display = "none";

@@ -7,7 +7,7 @@
       <div class="touch">
         <div class="card">
           <div class="card-body">
-            <h5 class="text-center">เพิ่มหนังสือ</h5>
+            <h5 class="text-center">เพิ่มผู้ยืม</h5>
             <div class="col-sm">
               <div class="form">
                 <form action="/addborrower" method="post">
@@ -23,7 +23,11 @@
                     <label for="std">หนังสือ :</label>
                     <select id="book" name="book"  class="form-control select2-multi"  multiple="multiple">
                       {% for k in data3 %}
-                      <option value="{{k[1]}}">{{k[1]}} | {{k[2]}} | {{k[6]}} {{k[7]}}</option>
+                      {%if k[5] == 1 %}
+                      <option value="{{k[1]}}" disabled>{{k[1]}} | {{k[2]}} | {{k[6]}} {{k[7]}} </option>
+                      {%elif  k[5] == 0 %}
+                      <option value="{{k[1]}}">{{k[1]}} | {{k[2]}} | {{k[6]}} {{k[7]}} </option>
+                      {%endif%}
                       {% endfor %}
                     </select>
                   </div>
@@ -76,12 +80,13 @@
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
+                <td>{{i[3]}} </td>  
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}} </td>
-                <td>{{i[3]}} </td>        
+                      
                 <td><a href="/updateborrower/{{i[0]}}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
                     aria-hidden="true"></i>
-                  <button data-id="{{i[3]}}" class="btn btn-danger delete" data-target="#confirm"
+                  <button data-id="{{i[0]}}" class="btn btn-danger delete" data-target="#confirm"
                     data-toggle="confirm">ลบ</i></td>
               </tr>
               {% endfor %}
@@ -161,7 +166,7 @@ $('#book').change(function(){
 })
 
 $("#SubmitBtn").click(function(){
-  $.post("addborrower",{
+  $.post("addborrowers",{
     std_id :std_id,
     borrowerdate : borrowerdate,
     returndate :returndate,

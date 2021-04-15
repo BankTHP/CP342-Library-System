@@ -1,5 +1,5 @@
 from typing import final
-from flask import Flask,render_template,request,redirect
+from flask import Flask,render_template,request,redirect,g,session,url_for
 import psycopg2
 
 con=psycopg2.connect(
@@ -253,46 +253,62 @@ def updatecategory(id):
 @app.route('/deletecategory/<string:id>')
 def deletecategory(id):
     try :
-        cur.execute("DELETE FROM categorylist WHERE cat_id="+id+"")
+        catedel = """DELETE FROM categorylist WHERE cat_id = %s"""
+        cur.execute(catedel,id)
+        
     except (Exception, psycopg2.Error) as error:
-        print("Error selecting data from table book", error)
+        print(error)
     finally:
         con.commit()
         return  redirect('/addcategory')
-app.run(debug=True,use_reloader=True)
-
 
 @app.route('/addborrowers', methods=["POST","GET"])
 def addborrowers():
     if request.method == 'POST' :
         try : 
-            id = request.form["std_id"]        
+            std_id = request.form["std_id"]        
             borrowerdate = request.form["borrowerdate"]             
             returndate = request.form["returndate"]  
             books = request.form["book"].split('-')
-            addborrower = """insert into borrow (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
-            cur.execute(addborrower,(id,returndate,borrowerdate))
+            addborrower = """insert into borrower (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
+            cur.execute(addborrower,(std_id,borrowerdate,returndate))
             con.commit()
-            x = cur.fetchone()[0]   
-            for i in range(1,len(books)+1) :
-                goryinsert = """INSERT INTO borrowers_books (book_id, borrower_id) values (%s,%s) """
-                cur.execute(goryinsert, (i,x))
-            con.commit()
+            x = cur.fetchone()[0] 
+            updatebook(books,x)
+
         except (Exception, psycopg2.Error) as error:     
             print("Error จ้า", error)
-            return redirect('/borrowers')
+            return redirect('/addborrowers')
         finally : 
             con.commit() 
-            return redirect('/borrowers') 
+            return redirect('/addborrowers') 
 
-    if request.method == 'GET' : 
-        cur.execute("SELECT * FROM borrower ORDER BY borrower_id")
-        result = cur.fetchall()
-        cur.execute("SELECT * FROM student ORDER by std_id")
-        stdresult = cur.fetchall()
-        cur.execute("SELECT * FROM book NATURAL JOIN author ORDER by book_id")
-        bookresult = cur.fetchall()
+    if request.method == 'GET' :
+        try:
+            cur.execute("SELECT * FROM borrower ORDER BY borrower_id")
+            result = cur.fetchall()
+            con.commit()
+            cur.execute("SELECT * FROM student ORDER by std_id")
+            stdresult = cur.fetchall()
+            con.commit()
+            cur.execute("SELECT * FROM book NATURAL JOIN author ORDER by book_id")
+            bookresult = cur.fetchall()
+            con.commit()
+        except (Exception, psycopg2.Error) as error:
+            print(error)
+            return redirect('/addborrowers')
+
     return render_template("addborrower.html",data = result,data2 = stdresult,data3 =bookresult)   
+
+def updatebook(books,x) :
+    print(books)
+    for i in range(len(books)) :
+        updatebook = """UPDATE book SET "BookStatus"= 1 WHERE book_id = {} """.format(books[i])
+        cur.execute(updatebook)
+        borrowbook = """insert into borrowers_books (book_id, borrower_id) values (%s,%s)"""
+        cur.execute(borrowbook,(books[i],x))
+        con.commit()
+        return redirect('/addborrowers')
 
 
 @app.route('/updateborrower/<string:id>',methods=["GET", "POST"])
@@ -312,18 +328,19 @@ def updateborrower(id):
             cur.execute(pg_update, (name,lname,major,year, id))
         except (Exception, psycopg2.Error) as error:
             print("Error selecting data from table book", error)
-            return redirect('/borrowers')
+            return redirect('/addborrowers')
         finally:
             con.commit()
-            return redirect('/borrowers')
+            return redirect('/addborrowers')
 
 @app.route('/deleteborrower/<string:id>')
 def deleteborrower(id):
     try :
-        cur.execute("DELETE FROM student WHERE std_id="+id+"")
+        cur.execute("DELETE FROM borrower WHERE borrower_id ="+id+"")
     except (Exception, psycopg2.Error) as error:
         print("Error selecting data from table book", error)
     finally:
         con.commit()
-        return  redirect('/borrowers')
+        return  redirect('/addborrowers')
 app.run(debug=True,use_reloader=True)
+

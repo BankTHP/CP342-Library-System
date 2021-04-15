@@ -8,21 +8,23 @@ con=psycopg2.connect(
     )
 
 cur=con.cursor()
-
+std_id = 62102010169
 author_id = 1
 booktitle = "database test เพิ่มค่า"
 floor = '3'
-book_publisher = '2021-04-01'
+borrowerdate = '2021-04-01'
+returndate = '2021-04-02'
 statusBook = 0 
-info = '1-2-3'.split('-')
-pginsert = """INSERT INTO book (author_id,booktitle,floor,book_publisher,"BookStatus") values (%s,%s,%s,%s,%s) RETURNING book_id """
-cur.execute(pginsert, (author_id,booktitle,floor,book_publisher,statusBook))
+books = '34-36'.split('-')
+for i in range(len(books)) :
+    print(books[1])
+id = 9
+addborrower = """DELETE FROM borrower where borrower_id = %s """
+cur.execute(addborrower,str(id))
+test = """ALTER SEQUENCE author_author_id_seq RESTART WITH {}""".format(id-1)
+cur.execute(test)
 con.commit()
-x = cur.fetchone()[0]
-for i in range(1,len(info)+1) :
-    goryinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
-    cur.execute(goryinsert, (x,i))
-con.commit()
+
 
     
 
