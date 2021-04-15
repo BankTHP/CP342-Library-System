@@ -10,7 +10,7 @@ con=psycopg2.connect(
 cur=con.cursor()
 
 author_id = 1
-booktitle = "database"
+booktitle = "database test เพิ่มค่า"
 floor = '3'
 book_publisher = '2021-04-01'
 statusBook = 0 
@@ -22,7 +22,7 @@ x = cur.fetchone()[0]
 for i in range(1,len(info)+1) :
     goryinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
     cur.execute(goryinsert, (x,i))
-    con.commit()
+con.commit()
 
     
 
