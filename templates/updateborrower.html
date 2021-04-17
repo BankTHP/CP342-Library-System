@@ -1,0 +1,87 @@
+{% extends 'base_layout.html' %}
+{% include 'includes/_navbaradmin.html' %}
+{% block body %}
+<div class="mt">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="touch">
+                <div class="card text-left">
+                    <div class="card-body">
+                        <form action='' method="POST">
+                            <h4 class=text-center>แก้ไขข้อมูล</h4>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <h4>รหัสนิสิต | ชื่อ </h4>
+                                    <input type="text" placeholder="name" class="form-control" name="name" value="{{data[0][2]}} | {{data[0][5]}} {{data[0][6]}} " /><br>
+                                    <h4>Return Date</h4>
+                                    <input type="text" placeholder="Return date" class="form-control" name="returndate" value="{{data[0][3]}}" /><br>
+                                    <h4>Borrower Date</h4>
+                                    <input type="text" placeholder="Borrower Date" class="form-control" name="borrowerdate" value="{{data[0][4]}}" /><br>
+                                    <h4>หนังสือ</h4>
+                                    <select id="book_id" name="book_id"  class="form-control select2-multi"  multiple="multiple">
+                                        {% for k in data %}
+                                        <option value="{{k[0]}}" selected="selected" >{{k[0]}} | {{k[10]}} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+
+                            <div class="d-flex justify-content-center">
+                                <div class="btn-group pt-3">
+                                    <input type="submit" class="btn btn-success mr-2" value="อัพเดต" />
+                                    <a href="/addborrowers" class="btn btn-primary">ย้อนกลับ <i
+                                            class="fas fa-arrow-circle-left"></i></a>
+                                </div>
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" onclick=myFunction() >Submit</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+  $('.select2-multi').select2();
+});
+
+
+$('#title').change(function(){
+    title = $(this).val();
+})
+$('#floor').change(function(){
+  floor = $(this).val();
+})
+$('#author_id').change(function(){
+  author_id = $(this).val();
+})
+$('#publisher').change(function(){
+  publisher = $(this).val();
+})
+$('#book_id').change(function(){
+    var book_id = $(this).val();
+    books = book_id .join("-");
+})
+$('#stock').change(function(){
+  stock = $(this).val();
+})
+function myFunction() {
+    alert(books)
+}
+$("#SubmitBtn").click(function(){
+  $.post("updateborrower",{
+    title:title,
+    floor:floor,
+    author_id:author_id,
+    c_id:c_ids,
+    publisher:publisher,
+    stock : stock
+  });
+  window.location.href = '/addborrowers';
+})
+
+</script>
+{% endblock %}

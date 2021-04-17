@@ -12,7 +12,7 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <h4>book id</h4>
-                                    <input type="integer" placeholder="รหัสนิสิต" class="form-control"  name="book_id" value="{{ data[0][0]}}" /><br>
+                                    <input type="integer" placeholder="รหัสนิสิต" class="form-control"  name="book_id" value="{{ data[0][1]}}" /><br>
                                     <h4>author id</h4>
                                     <select id="a_id" name="author_id">
                                         {% for i in data2 %}
@@ -24,13 +24,18 @@
                                       </select>
                                       <br><br>
                                     <h4>Title</h4>
-                                    <input type="text" placeholder="title" class="form-control" name="title" value="{{data[0][2]}}" /><br>
+                                    <input type="text" placeholder="title" class="form-control" name="title" value="{{data[0][3]}}" /><br>
                                     <h4>floor</h4>
-                                    <input type="text" placeholder="floor" class="form-control" name="floor" value="{{data[0][3]}}" /><br>
+                                    <input type="text" placeholder="floor" class="form-control" name="floor" value="{{data[0][4]}}" /><br>
                                     <h4>publisher :</h4>
-                                    <input type="date"  class="form-control" name="year"value="{{data[0][4]}}" /><br>
+                                    <input type="date"  class="form-control" name="year"value="{{data[0][5]}}" /><br>
                                     <h4>stock :</h4>
-                                    <input type="text"  class="form-control" name="stock"value="{{data[0][5]}}" /><br>
+                                    <input type="text"  class="form-control" name="stock"value="{{data[0][6]}}" /><br>
+                                    <select id="c_id" name="c_id"  class="form-control select2-multi"  multiple="multiple">
+                                        {% for k in data %}
+                                        <option value="{{k[0]}}" selected="selected" >{{k[7]}} | {{k[8]}} </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
 
@@ -48,5 +53,10 @@
 
         </div>
     </div>
-</div>
+</div><script>
+$(function(){
+$('.select2-multi').select2();
+});
+</script>
+
 {% endblock %}

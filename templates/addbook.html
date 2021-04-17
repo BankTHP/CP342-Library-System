@@ -51,7 +51,7 @@
                   </div>
                 </form> 
                 <br>
-              </div><button class="btn btn-primary" id ="SubmitBtn">Submit</button>
+              </div><button class="btn btn-primary" id="SubmitBtn">Submit</button>
             </div>
           </div>
         </div>
@@ -159,10 +159,10 @@ $(document).ready(function () {
     window.location.href = "/deletebook/" + id;
     });
 });
-var c_ids = 1;
+var c_ids = ("{{data3[0][0]}}");
 var title = "TestTitle";
 var floor = 1;
-var author_id = 0;
+var author_id = ("{{data2[0][0]}}");
 var publisher = "Testpublisher";
 
 $('#title').change(function(){
@@ -184,7 +184,6 @@ $('#c_id').change(function(){
 $('#stock').change(function(){
   stock = $(this).val();
 })
-
 $("#SubmitBtn").click(function(){
   $.post("addbook",{
     title:title,

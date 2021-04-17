@@ -19,7 +19,7 @@ users.append(User(id=3, username='kae', password='kae'))
 
 con=psycopg2.connect(
     host='localhost',
-    database='CP342',
+    database='CP342-FINALPROJECT',
     user='postgres',
     password='0957132960'
     )
@@ -229,25 +229,27 @@ def addbook():
         categoryresult = cur.fetchall()
         return render_template("addbook.html",data = result,data2 = authorresult,data3 = categoryresult)
 
-    if request.method == 'POST' :
-        cur=con.cursor() 
-        author_id = request.form["author_id"]
-        title = request.form["title"] 
-        floor = request.form["floor"]
-        publisher = request.form["publisher"]
-        category = request.form["c_id"].split("-")
-        stock = request.form["stock"]
-        insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,stock) values (%s,%s,%s,%s,%s) RETURNING book_id """
-        cur.execute(insertbook, (author_id,title,floor,publisher,stock))
-        con.commit()
-        x = cur.fetchone()[0]   
-        for i in range(category):
-            goryinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
-            cur.execute(goryinsert, (x,category[i]))
-            con.commit()
-        cur.close()
+    if request.method == 'POST' : 
+        adddbook()
     return redirect('/addbook')
-    
+
+def adddbook() :
+    cur=con.cursor() 
+    author_id = request.form["author_id"]
+    title = request.form["title"] 
+    floor = request.form["floor"]
+    publisher = request.form["publisher"]
+    category = request.form["c_id"].split("-")
+    stock = request.form["stock"]
+    insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,stock) values (%s,%s,%s,%s,%s) RETURNING book_id """
+    cur.execute(insertbook, (author_id,title,floor,publisher,stock))
+    con.commit()
+    x= cur.fetchall()[0][0]
+    for i in range(len(category)):
+        cateinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
+        cur.execute(cateinsert, (x,category[i]))
+    con.commit()
+    cur.close()
 
 @app.route('/updatebook/<string:id>',methods=["GET", "POST"])
 def updatebook(id):
@@ -255,7 +257,7 @@ def updatebook(id):
         return redirect(url_for('login'))
     if request.method == 'GET':
         cur=con.cursor() 
-        updateshow = """SELECT * FROM book WHERE book_id = %s ORDER BY book_id"""
+        updateshow = """SELECT * FROM book NATURAL JOIN category NATURAL JOIN categorylist  WHERE book_id = %s ORDER BY book_id"""
         cur.execute(updateshow,id)
         update = cur.fetchall()
         updateauthor = """SELECT * FROM author NATURAL JOIN book WHERE book_id = %s """
@@ -263,6 +265,7 @@ def updatebook(id):
         author = cur.fetchall()
         cur.execute("SELECT * FROM author book")
         authorupdate = cur.fetchall()
+        cur.close()
         return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate)
 
     if request.method == 'POST':
@@ -277,10 +280,10 @@ def updatebook(id):
             pg_update = """Update book set author_id = %s , booktitle = %s , floor = %s , book_publisher = %s , stock = %s where book_id = %s"""
             cur.execute(pg_update, (author_id,title,floor,publisher,stock,bookid))
             con.commit()
-            cur.close()
         except (Exception, psycopg2.Error) as error:
             print(error)
-        finally :       
+        finally :     
+            cur.close()  
             return redirect('/addbook')
         
 
@@ -291,7 +294,7 @@ def deletebook(id):
     try : 
         cur=con.cursor() 
         deletebook = """DELETE FROM book WHERE book_id= %s"""
-        cur.execute(deletebook,id)
+        cur.execute(deletebook,(id,))
         con.commit()
         cur.close()
     except (Exception, psycopg2.Error) as error: 
@@ -430,19 +433,22 @@ def updateborrower(id):
         return redirect(url_for('login'))
     if request.method == 'GET':
         cur=con.cursor() 
-        cur.execute("SELECT * FROM student WHERE std_id ="+id+"")
+        selborrower = """SELECT * FROM borrower NATURAL JOIN student NATURAL JOIN borrowers_books natural join book WHERE borrower_id = %s """
+        cur.execute(selborrower,(id,))
         update = cur.fetchall()
-        return render_template("update.html",data = update)
+        return render_template("updateborrower.html",data = update)
+
     if request.method == 'POST':
         try : 
+            print("x")
             cur=con.cursor() 
-            id = request.form["std_id"] 
-            name = request.form["std_firstname"] 
-            lname = request.form["std_lastname"] 
-            major = request.form["major"]
-            year = request.form["Year"]
-            pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
-            cur.execute(pg_update, (name,lname,major,year, id))
+            # id = request.form["std_id"] 
+            # name = request.form["std_firstname"] 
+            # lname = request.form["std_lastname"] 
+            # major = request.form["major"]
+            # year = request.form["Year"]
+            # pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
+            # cur.execute(pg_update, (name,lname,major,year, id))
         except (Exception, psycopg2.Error) as error:
             print(error)
             return redirect('/addborrowers')
@@ -468,7 +474,7 @@ def deleteborrower(id):
             cur.execute(delstd2,(id,))
             con.commit()
             updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
-            cur.execute(updatebook,((x+1),book))
+            cur.execute(updatebook,((x+1),book[i][0]))
     except (Exception, psycopg2.Error) as error:
         print(error)
     finally:
