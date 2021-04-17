@@ -457,10 +457,18 @@ def deleteborrower(id):
         return redirect(url_for('login'))
     try :
         cur=con.cursor() 
-        delstd = """DELETE FROM borrowers_books WHERE borrower_id = %s RETURNING book_id"""
-        cur.execute(delstd,(id,))
-        delstd2 = """DELETE FROM borrower WHERE borrower_id = %s """
-        cur.execute(delstd2,(id,))    
+        selborrower = """SELECT * FROM borrowers_books WHERE borrower_id = %s"""
+        cur.execute(selborrower,(id,))
+        book = cur.fetchall()
+        for i in range(len(book)) :
+            selbook = """SELECT * FROM book WHERE book_id = %s"""
+            cur.execute(selbook,(book[i][0],))
+            x = cur.fetchall()[0][5]
+            delstd2 = """DELETE FROM borrower WHERE borrower_id = %s returning borrower_id"""
+            cur.execute(delstd2,(id,))
+            con.commit()
+            updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
+            cur.execute(updatebook,((x+1),book))
     except (Exception, psycopg2.Error) as error:
         print(error)
     finally:

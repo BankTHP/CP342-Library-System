@@ -12,19 +12,19 @@ std_id = 62102010169
 author_id = 1
 booktitle = "database test เพิ่มค่า"
 floor = '3'
+publisher = '2021-04-01'
 borrowerdate = '2021-04-01'
 returndate = '2021-04-02'
+category= '1-2-3-4'.split('-')
 statusBook = 0 
+stock = 10
 books = '34-36'.split('-')
-id = 16
-delbook = """DELETE FROM borrowers_books WHERE borrower_id = %s RETURNING book_id"""
-cur.execute(delbook,(id,))
-book = cur.fetchall()
-for i  in range(len(books)+1):
-    selbook = "SELECT * FROM book WHERE book_id = %s "
-    cur.execute(selbook,(book[i][0],))
-    stock = cur.fetchall()[0][5]
-    updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
-    cur.execute(updatebook,((stock+1),book[i][0]))
+insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,stock) values (%s,%s,%s,%s,%s) RETURNING book_id """
+cur.execute(insertbook, (author_id,booktitle,floor,publisher,stock))
+con.commit()
+x = cur.fetchone()[0]   
+for i in range():
+    goryinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
+    cur.execute(goryinsert, (x,category[i]))
     con.commit()
 

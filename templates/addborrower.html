@@ -41,7 +41,7 @@
                   </div>
                 </form> 
                 <br>
-              </div><button class="btn btn-primary" id = "SubmitBtn">Submit</button>
+              </div><button class="btn btn-primary" id =SubmitBtn >Submit</button>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ $(document).ready(function () {
     window.location.href = "/deleteborrower/" + id;
     });
 });
-var std_id = 1;
+var std_id = ("{{data2[0][0]}}");
 var borrowerdate = "TestTitle";
 var returndate = "TestTitle";
 
@@ -164,7 +164,6 @@ $('#book').change(function(){
     var book = $(this).val();
     bookresult = book.join("-");
 })
-
 $("#SubmitBtn").click(function(){
   $.post("addborrowers",{
     std_id :std_id,
