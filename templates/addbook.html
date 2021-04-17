@@ -45,12 +45,13 @@
                     <label for="lname">Publisher :</label>
                     <input type="date" id="publisher" class="form-control" name="publisher" >
                   </div>
-                  <br>
                   <div class="form-group">
+                    <label for="lname">Stock :</label>
+                    <input type="text" id="stock" class="form-control" name="stock" >
                   </div>
                 </form> 
                 <br>
-              </div><button class="btn btn-primary" id = "SubmitBtn">Submit</button>
+              </div><button class="btn btn-primary" id ="SubmitBtn">Submit</button>
             </div>
           </div>
         </div>
@@ -84,6 +85,7 @@
               <th>ชื่อนักแต่ง</th>
               <th>ชื่อหนังสือ</th>
               <th>วันที่พิมพ์</th>
+              <th>จำนวน</th>
               <th></th>
             </tr>
           </thead>
@@ -94,11 +96,11 @@
                 <td>{{i[1]}} {{i[2]}}</td>
                 <td>{{i[4]}}</td>
                 <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
                 <td><a href="/updatebook/{{i[3]}}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
                     aria-hidden="true"></i>
                   <button data-id="{{i[3]}}" class="btn btn-danger delete" data-target="#confirm"
                     data-toggle="confirm">ลบ</i></td>
-
               </tr>
               {% endfor %}
             </tbody>
@@ -179,6 +181,9 @@ $('#c_id').change(function(){
     var c_id = $(this).val();
     c_ids = c_id.join("-");
 })
+$('#stock').change(function(){
+  stock = $(this).val();
+})
 
 $("#SubmitBtn").click(function(){
   $.post("addbook",{
@@ -186,7 +191,8 @@ $("#SubmitBtn").click(function(){
     floor:floor,
     author_id:author_id,
     c_id:c_ids,
-    publisher:publisher
+    publisher:publisher,
+    stock : stock
   });
   window.location.href = '/addbook';
 })
