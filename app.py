@@ -1,5 +1,5 @@
 from typing import final
-from flask import Flask,render_template,request,redirect,g,session,url_for
+from flask import Flask,render_template,request,redirect,g,session,url_for,flash
 import os 
 import psycopg2
 
@@ -141,7 +141,7 @@ def delete(id):
         delstdid = """DELETE FROM student WHERE std_id = %s"""
         cur.execute(delstdid,(id,))
     except (Exception, psycopg2.Error) as error:
-        print(error)
+        flash("นิสิตคนนี้ยังมีชื่อในระบบ borrower ", "info")
     finally:
         con.commit()
         cur.close()
@@ -205,12 +205,12 @@ def deleteauthor(id):
     try :
         cur=con.cursor() 
         delauthor = """DELETE FROM author WHERE author_id= %s"""
-        cur.execute(delauthor,id)
+        cur.execute(delauthor,id)  
+    except (Exception, psycopg2.Error) as error:
+        flash("นักแต่งคนนี้ยังมีหนังสืออยู่ในระบบ", "info")
+    finally :
         con.commit()
         cur.close()
-    except (Exception, psycopg2.Error) as error:
-        print(error)
-    finally :
         return redirect('/addauthor')
 
 ##############################################################################################################################
@@ -258,15 +258,18 @@ def updatebook(id):
     if request.method == 'GET':
         cur=con.cursor() 
         updateshow = """SELECT * FROM book NATURAL JOIN category NATURAL JOIN categorylist  WHERE book_id = %s ORDER BY book_id"""
-        cur.execute(updateshow,id)
+        cur.execute(updateshow,(id,))
         update = cur.fetchall()
         updateauthor = """SELECT * FROM author NATURAL JOIN book WHERE book_id = %s """
         cur.execute(updateauthor,id)
         author = cur.fetchall()
         cur.execute("SELECT * FROM author book")
         authorupdate = cur.fetchall()
+        updatecategory = """SELECT * FROM categorylist order by cat_id"""
+        cur.execute(updatecategory)
+        category = cur.fetchall()
         cur.close()
-        return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate)
+        return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate,data4 = category)
 
     if request.method == 'POST':
         try:
@@ -275,14 +278,36 @@ def updatebook(id):
             title = request.form["title"] 
             author_id = request.form["author_id"] 
             floor = request.form["floor"] 
-            publisher = request.form["year"] 
+            publisher = request.form["publisher"] 
             stock = request.form["stock"]
+            category = request.form["c_id"].split('-')
             pg_update = """Update book set author_id = %s , booktitle = %s , floor = %s , book_publisher = %s , stock = %s where book_id = %s"""
-            cur.execute(pg_update, (author_id,title,floor,publisher,stock,bookid))
+            cur.execute(pg_update, (author_id,title,floor,publisher,stock,bookid))            
             con.commit()
+            selbook = """select cat_id from category WHERE book_id = %s"""
+            cur.execute(selbook,(bookid,))
+            xp = cur.fetchall()
+            js = list()
+            categorytest = list(dict.fromkeys(category))
+            for i in range(len(xp)):
+                js.append(str(xp[i][0]))
+            check = list()
+            for i in range(len(js)) :
+                if(js[i] in categorytest) :
+                    categorytest.remove(js[i])
+                else :
+                    check.append(str(js[i]))
+            for j in range(len(check)):
+                delid = """DELETE FROM category WHERE book_id = %s AND cat_id = %s """
+                cur.execute(delid,(bookid,check[j]))        
+            for k in range(len(categorytest)):
+                insertid = """INSERT INTO category (book_id,cat_id) VALUES (%s,%s) """
+                cur.execute(insertid,(bookid,categorytest[k]))
+
         except (Exception, psycopg2.Error) as error:
             print(error)
-        finally :     
+        finally : 
+            con.commit() 
             cur.close()  
             return redirect('/addbook')
         
@@ -295,12 +320,27 @@ def deletebook(id):
         cur=con.cursor() 
         deletebook = """DELETE FROM book WHERE book_id= %s"""
         cur.execute(deletebook,(id,))
+    except (Exception, psycopg2.Error) as error: 
+        flash("ERROR ยังมีหนังสืออยู่ในระบบborrower", "info")
+    finally :  
         con.commit()
         cur.close()
-    except (Exception, psycopg2.Error) as error: 
-        print(error)
-    finally :  
         return  redirect('/addbook')
+
+@app.route('/searchborrower', methods=["POST","GET"])
+def searchborrower():  
+    if request.method == "POST" : 
+        cur=con.cursor() 
+        stdid = request.form["stdid"] 
+        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where book = %s"""
+        cur.execute(searchbooks,(stdid))
+        result = cur.fetchall()
+    if request.method == 'GET' :
+        cur=con.cursor() 
+        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where borrower_id = 4"""
+        cur.execute(searchbooks)
+        result = cur.fetchall()
+    return render_template("searchborrower.html",data = result)
 
 @app.route('/searchbooks')
 def searchbooks():   
@@ -368,11 +408,11 @@ def deletecategory(id):
     try :
         cur=con.cursor() 
         catedel = """DELETE FROM categorylist WHERE cat_id = %s"""        
-        con.commit()
         cur.execute(catedel,id)        
     except (Exception, psycopg2.Error) as error:
-        print(error)
+        flash("ERROR หมวดหมู่ยังเป็นประเภทของหนังสืออยู่!", "info")
     finally:
+        con.commit()
         cur.close()
         return  redirect('/addcategory')
 
@@ -435,20 +475,38 @@ def updateborrower(id):
         cur=con.cursor() 
         selborrower = """SELECT * FROM borrower NATURAL JOIN student NATURAL JOIN borrowers_books natural join book WHERE borrower_id = %s """
         cur.execute(selborrower,(id,))
+        print(id)
         update = cur.fetchall()
-        return render_template("updateborrower.html",data = update)
+        selborrower1 = """SELECT * FROM book """
+        cur.execute(selborrower1)
+        choice= cur.fetchall()
+        return render_template("updateborrower.html",data = update,data2 = choice)
 
     if request.method == 'POST':
         try : 
-            print("x")
             cur=con.cursor() 
-            # id = request.form["std_id"] 
-            # name = request.form["std_firstname"] 
-            # lname = request.form["std_lastname"] 
-            # major = request.form["major"]
-            # year = request.form["Year"]
-            # pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
-            # cur.execute(pg_update, (name,lname,major,year, id))
+            borrower_id = request.form['borrower_id']
+            book_id = request.form["book_id"].split('-')
+            book = """SELECT * FROM borrowers_books where borrower_id = %s"""
+            cur.execute(book,(borrower_id,))
+            xp = cur.fetchall()
+            js = list()
+            categorytest = list(dict.fromkeys(book_id))    
+            for i in range(len(xp)):
+                js.append(str(xp[i][0]))
+            check = list()
+            for i in range(len(js)) :
+                if(js[i] in categorytest) :
+                    categorytest.remove(js[i]) # เอาที่ต่างกัน
+                else :
+                    check.append(str(js[i]))
+            for i in range(len(check)):
+                delid = """DELETE FROM borrowers_books WHERE borrower_id = %s AND book_id = %s """
+                cur.execute(delid,(borrower_id,check[i]))
+            for i in range(len(categorytest)):
+                insertid = """INSERT INTO borrowers_books (book_id,borrower_id) VALUES (%s,%s) """
+                cur.execute(insertid,(categorytest[i],borrower_id))
+
         except (Exception, psycopg2.Error) as error:
             print(error)
             return redirect('/addborrowers')

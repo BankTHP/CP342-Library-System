@@ -12,7 +12,7 @@
               <div class="col-sm">
                 <div class="form">
                   <form>
-                    <h5 class="text-center">ค้นหาหนังสือ</h5><input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
+                    <h5 class="text-center">ค้นหาหนังสือ</h5><input type="text" id="stdid" class="form-control" onkeyup="myFunction()"
                       placeholder="ค้นหาได้ด้วยชื่อหนังสือ หรือ ผู้แต่ง" title="Type in a name">
                   </form>
                   <br>
@@ -23,24 +23,23 @@
           <table id="Searchtable" class="table table-bordered  table-success">
             <thead>
               <tr>
-                <th>ชื่อหนังสือ</th>
+                <th>รหัสนิสิต</th>
                 <th>ชื่อผู้แต่ง</th>
                 <th>นามสกุลผู้แต่ง</th>
                 <th>สถานะหนังสือ</th>
-                <th>จำนวนที่เหลืออยู่</th>
               </tr>
             </thead>
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
+                <td>{{i[0]}}</td>
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}}</td>
-                <td>{{i[6]}}</td>
-                <td>{{i[7]}}</td>
+                <td>{{i[3]}}</td>
                 {%if i[5] == 0%}
                 <td>ยังไม่ถูกยืม</td>
-                {%elif i[5] > 0 %}
-                <td>{{i[5]}}</td>
+                {%elif i[5] == 1%}
+                <td>ถูกยืมแล้ว</td>
                 {%endif%}
                 
               </tr>
@@ -54,26 +53,4 @@
 </div>
 </div>
 </div>
-<script>
-  function myFunction() {
-    var filter = event.target.value.toUpperCase();
-    var rows = document.querySelector("#Searchtable tbody").rows;
-
-    for (var i = 0; i < rows.length; i++) {
-      var firstCol = rows[i].cells[0].textContent.toUpperCase();
-      var secondCol = rows[i].cells[1].textContent.toUpperCase();
-      var tCol = rows[i].cells[2].textContent.toUpperCase();
-      var fCol = rows[i].cells[3].textContent.toUpperCase();
-      
-      if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol
-        .indexOf(filter) > -1 ) {
-        rows[i].style.display = "";
-      } else {
-        rows[i].style.display = "none";
-      }
-    }
-  }
-
-</script>
-
 {% endblock %}

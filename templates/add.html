@@ -93,7 +93,7 @@
                 <td><a href="/update/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
                     aria-hidden="true"></i>
                     <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
-                    data-toggle="confirm">ลบ</i></td>
+                    data-toggle="confirm">ลบ</i></button></td>
 
               </tr>
               {% endfor %}
@@ -123,9 +123,8 @@
   </div>
 </div>
 
-
 <script>
-  function myFunction() {
+function myFunction() {
     var filter = event.target.value.toUpperCase();
     var rows = document.querySelector("#Searchtable tbody").rows;
 
