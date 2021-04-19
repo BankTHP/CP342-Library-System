@@ -261,7 +261,7 @@ def updatebook(id):
         cur.execute(updateshow,(id,))
         update = cur.fetchall()
         updateauthor = """SELECT * FROM author NATURAL JOIN book WHERE book_id = %s """
-        cur.execute(updateauthor,id)
+        cur.execute(updateauthor,(id,))
         author = cur.fetchall()
         cur.execute("SELECT * FROM author book")
         authorupdate = cur.fetchall()
@@ -281,6 +281,13 @@ def updatebook(id):
             publisher = request.form["publisher"] 
             stock = request.form["stock"]
             category = request.form["c_id"].split('-')
+            print("bookid",bookid)
+            print("title",title)
+            print("author_id",author_id)
+            print("floor",floor)
+            print("publisher",publisher)
+            print("stock",stock)
+            print("category",category)
             pg_update = """Update book set author_id = %s , booktitle = %s , floor = %s , book_publisher = %s , stock = %s where book_id = %s"""
             cur.execute(pg_update, (author_id,title,floor,publisher,stock,bookid))            
             con.commit()
@@ -332,13 +339,14 @@ def searchborrower():
     if request.method == "POST" : 
         cur=con.cursor() 
         stdid = request.form["stdid"] 
-        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where book = %s"""
+        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where borrower_id = %s"""
         cur.execute(searchbooks,(stdid))
         result = cur.fetchall()
+        print(result)
     if request.method == 'GET' :
         cur=con.cursor() 
-        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where borrower_id = 4"""
-        cur.execute(searchbooks)
+        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where borrower_id = %s"""
+        cur.execute(searchbooks,(stdid,))
         result = cur.fetchall()
     return render_template("searchborrower.html",data = result)
 
@@ -429,7 +437,8 @@ def addborrowers():
             books = request.form["book"].split('-')
             addborrower = """insert into borrower (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
             cur.execute(addborrower,(std_id,borrowerdate,returndate))
-            x = cur.fetchone()[0] 
+            x = cur.fetchone()[0]
+            print(books)
             updatebook(books,x)
         except (Exception, psycopg2.Error) as error:     
             print(error)
@@ -456,14 +465,13 @@ def addborrowers():
 def updatebook(books,x) :
     cur=con.cursor()
     for i in range(len(books)) :
-        selbook = """SELECT * FROM book WHERE book_id = %s """
-        cur.execute(selbook,books[i][0])
+        selbook = """SELECT * FROM book WHERE book_id = %s"""
+        cur.execute(selbook,(books[i],))
         book = cur.fetchall()[0][5]
         updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
-        cur.execute(updatebook,((book-1),books[i][0]))
-        con.commit()
+        cur.execute(updatebook,(book-1,(books[i])))
         borrowbook = """insert into borrowers_books (book_id, borrower_id) values (%s,%s)"""
-        cur.execute(borrowbook,(books[i][0],x))
+        cur.execute(borrowbook,(books[i],x))
         con.commit()
 
 
@@ -475,7 +483,6 @@ def updateborrower(id):
         cur=con.cursor() 
         selborrower = """SELECT * FROM borrower NATURAL JOIN student NATURAL JOIN borrowers_books natural join book WHERE borrower_id = %s """
         cur.execute(selborrower,(id,))
-        print(id)
         update = cur.fetchall()
         selborrower1 = """SELECT * FROM book """
         cur.execute(selborrower1)
@@ -501,12 +508,25 @@ def updateborrower(id):
                 else :
                     check.append(str(js[i]))
             for i in range(len(check)):
+                print(check)
                 delid = """DELETE FROM borrowers_books WHERE borrower_id = %s AND book_id = %s """
                 cur.execute(delid,(borrower_id,check[i]))
+                selbook = """SELECT stock FROM book WHERE book_id = %s"""
+                cur.execute(selbook,(check[i],))
+                book = cur.fetchall()[0][0]
+                updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
+                cur.execute(updatebook,(book+1,(check[i])))
+            
             for i in range(len(categorytest)):
                 insertid = """INSERT INTO borrowers_books (book_id,borrower_id) VALUES (%s,%s) """
                 cur.execute(insertid,(categorytest[i],borrower_id))
-
+                selbook = """SELECT stock FROM WHERE book_id = %s"""
+                print(categorytest)
+                cur.execute(selbook,(categorytest[i],))
+                book = cur.fetchall()
+                print(book)
+                updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
+                cur.execute(updatebook,(book-1,(categorytest[i])))
         except (Exception, psycopg2.Error) as error:
             print(error)
             return redirect('/addborrowers')
@@ -521,20 +541,17 @@ def deleteborrower(id):
         return redirect(url_for('login'))
     try :
         cur=con.cursor() 
-        selborrower = """SELECT * FROM borrowers_books WHERE borrower_id = %s"""
+        selborrower = """SELECT * FROM borrowers_books natural join book WHERE borrower_id = %s"""
         cur.execute(selborrower,(id,))
         book = cur.fetchall()
-        for i in range(len(book)) :
-            selbook = """SELECT * FROM book WHERE book_id = %s"""
-            cur.execute(selbook,(book[i][0],))
-            x = cur.fetchall()[0][5]
+        for i in range(len(book)):
+            updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
+            cur.execute(updatebook,((book[i][6]+1),book[i][0]))
+            con.commit()
             delstd2 = """DELETE FROM borrower WHERE borrower_id = %s returning borrower_id"""
             cur.execute(delstd2,(id,))
-            con.commit()
-            updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
-            cur.execute(updatebook,((x+1),book[i][0]))
     except (Exception, psycopg2.Error) as error:
-        print(error)
+        flash("ERROR! ", "info")
     finally:
         con.commit()
         cur.close()
