@@ -6,7 +6,7 @@
     <div class="col-md-12">
       <div class="touch">
         <div class="card text-left">
-          <div class="card-body">
+          <div class="card-body ">
             <div class="row">
               <div class="col-sm">
                 {% with messages = get_flashed_messages()%}
@@ -26,7 +26,7 @@
                     <h5 class="text-center">ค้นหา</h5><input type="text" name="stdid" class="form-control"
                       onkeyup="myFunction()" placeholder="ค้นหาด้วยรหัสนิสิต" title="Type in a name">
                     <div class="form-group">
-                      <input type="submit" class="btn btn-primary" value="Submit">
+                      <input type="submit" class="btn btn-dark " value="Submit">
                     </div>
                   </form>
                   <br>
@@ -34,8 +34,8 @@
               </div>
             </div>
           </div>
-          <table id="Searchtable" class="table table-bordered  table-success">
-            <thead>
+          <table id="Searchtable" class="table table-bordered">
+            <thead class="thead-dark">
               <tr>
                 <th>รหัสนิสิต</th>
                 <th>ชื่อหนังสือ</th>
@@ -43,7 +43,7 @@
                 <th>สถานะหนังสือ</th>
               </tr>
             </thead>
-            <tbody style="background-color: white">
+            <tbody>
               {% for i in data %}
               <tr>
                 <td>{{i[3]}}</td>

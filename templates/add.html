@@ -6,7 +6,7 @@
     <div class="col-md-12">
       <div class="touch">
         <div class="card">
-          <div class="card-body">
+          <div class="card-body ">
             {% with messages = get_flashed_messages()%}
             {% if messages %}
             {% for msg in messages%}
@@ -52,7 +52,7 @@
                   </div>
                   <br>
                   <div class="form-group">
-                    <input type="submit" class="btn btn-primary" value="Submit">
+                    <input type="submit" class="btn btn-dark" value="Submit">
                   </div>
                 </form>
                 <br>
@@ -83,8 +83,8 @@
               </div>
             </div>
           </div>
-          <table id="Searchtable" class="table table-bordered  table-success">
-            <thead>
+          <table id="Searchtable" class="table table-bordered">
+            <thead class="thead-dark">
               <tr>
                 <th>รหัสนิสิต</th>
                 <th>ชื่อ</th>
