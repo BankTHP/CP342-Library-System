@@ -30,6 +30,10 @@ def login():
         if request.form['password'] == 'admin' :
             session['user']  = request.form["username"]
             return redirect(url_for('adminpages'))
+        else :
+            errorflash = flash("โปรดตรวจสอบความถูกต้อง", "info")
+            return render_template("login.html",error = errorflash)
+
 
     return render_template("login.html")
 
@@ -315,7 +319,11 @@ def searchborrower():
             selborrower = """SELECT * FROM borrower NATURAL JOIN borrowers_books NATURAL JOIN book WHERE std_id = %s"""
             cur.execute(selborrower,(x,))
             result = cur.fetchall()
-            return render_template("searchborrower.html",data = result)
+            if (result == []) :
+                test = flash("ไม่พบข้อมูล")
+                return render_template("searchborrower.html",data = test)
+            else :
+                return render_template("searchborrower.html",data = result)
         except (Exception, psycopg2.Error) as error:
             flash("ไม่พบข้อมูล")
             return redirect('/searchborrower')
