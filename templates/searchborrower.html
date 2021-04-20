@@ -11,9 +11,12 @@
               
               <div class="col-sm">
                 <div class="form">
-                  <form>
-                    <h5 class="text-center">ค้นหาหนังสือ</h5><input type="text" id="stdid" class="form-control" onkeyup="myFunction()"
-                      placeholder="ค้นหาได้ด้วยชื่อหนังสือ หรือ ผู้แต่ง" title="Type in a name">
+                  <form action="/searchborrower" method="post">
+                    <h5 class="text-center">ค้นหา</h5><input type="text" name="stdid"" class="form-control" onkeyup="myFunction()"
+                      placeholder="ค้นหาด้วยรหัสนิสิต" title="Type in a name">
+                      <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                      </div>
                   </form>
                   <br>
                 </div>
@@ -36,12 +39,6 @@
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}}</td>
                 <td>{{i[3]}}</td>
-                {%if i[5] == 0%}
-                <td>ยังไม่ถูกยืม</td>
-                {%elif i[5] == 1%}
-                <td>ถูกยืมแล้ว</td>
-                {%endif%}
-                
               </tr>
               {% endfor %}
             </tbody>

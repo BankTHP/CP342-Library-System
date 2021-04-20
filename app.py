@@ -125,19 +125,11 @@ def update(id):
 
 @app.route('/delete/<string:id>')
 def delete(id):
+    print(id)
     if not g.user:
         return redirect(url_for('login'))
-    try :
+    try :  
         cur=con.cursor()
-        selectbor ="""SELECT * FROM borrower WHERE std_id = %s"""
-        cur.execute(selectbor,(id,))
-        x = cur.fetchall()
-        for i in range(len(x)):
-            delbor = """DELETE FROM borrowers_books WHERE borrower_id = %s"""
-            cur.execute (delbor,(x[i][0],))
-            con.commit()
-        delborid = """DELETE FROM borrower WHERE std_id = %s """
-        cur.execute(delborid,(id,))
         delstdid = """DELETE FROM student WHERE std_id = %s"""
         cur.execute(delstdid,(id,))
     except (Exception, psycopg2.Error) as error:
@@ -200,6 +192,7 @@ def updateauthor(id):
 
 @app.route('/deleteauthor/<string:id>')
 def deleteauthor(id):
+    print(id)
     if not g.user:
         return redirect(url_for('login'))
     try :
@@ -281,13 +274,9 @@ def updatebook(id):
             publisher = request.form["publisher"] 
             stock = request.form["stock"]
             category = request.form["c_id"].split('-')
-            print("bookid",bookid)
-            print("title",title)
-            print("author_id",author_id)
-            print("floor",floor)
-            print("publisher",publisher)
-            print("stock",stock)
-            print("category",category)
+            print("bookid: " + bookid)
+            print("title: " + title)
+            
             pg_update = """Update book set author_id = %s , booktitle = %s , floor = %s , book_publisher = %s , stock = %s where book_id = %s"""
             cur.execute(pg_update, (author_id,title,floor,publisher,stock,bookid))            
             con.commit()
@@ -334,21 +323,21 @@ def deletebook(id):
         cur.close()
         return  redirect('/addbook')
 
-@app.route('/searchborrower', methods=["POST","GET"])
-def searchborrower():  
-    if request.method == "POST" : 
-        cur=con.cursor() 
-        stdid = request.form["stdid"] 
-        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where borrower_id = %s"""
-        cur.execute(searchbooks,(stdid))
-        result = cur.fetchall()
-        print(result)
-    if request.method == 'GET' :
-        cur=con.cursor() 
-        searchbooks = """SELECT * FROM  borrower natural join borrowers_books where borrower_id = %s"""
-        cur.execute(searchbooks,(stdid,))
-        result = cur.fetchall()
-    return render_template("searchborrower.html",data = result)
+# @app.route('/searchborrower', methods=["POST","GET"])
+# def searchborrower():  
+#     if request.method == 'GET' :
+#         return render_template("searchborrower.html")
+#     if request.method == "POST" : 
+#         try :
+#             cur=con.cursor() 
+#             stdid = request.form["stdid"] 
+#             searchbooks = """SELECT booktitle,returndate FROM  borrower natural join borrowers_books natural join borrowers_books where std_id = %s"""
+#             cur.execute(searchbooks,(stdid,))
+#             result = cur.fetchall()
+#         except (Exception, psycopg2.Error) as error:
+#             flash("ERROR ไม่พบข้อมูลในระบบ", "info")
+    
+#     return render_template("searchborrower.html",data=result)
 
 @app.route('/searchbooks')
 def searchbooks():   
@@ -508,7 +497,6 @@ def updateborrower(id):
                 else :
                     check.append(str(js[i]))
             for i in range(len(check)):
-                print(check)
                 delid = """DELETE FROM borrowers_books WHERE borrower_id = %s AND book_id = %s """
                 cur.execute(delid,(borrower_id,check[i]))
                 selbook = """SELECT stock FROM book WHERE book_id = %s"""
@@ -516,14 +504,12 @@ def updateborrower(id):
                 book = cur.fetchall()[0][0]
                 updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
                 cur.execute(updatebook,(book+1,(check[i])))
-            
             for i in range(len(categorytest)):
                 insertid = """INSERT INTO borrowers_books (book_id,borrower_id) VALUES (%s,%s) """
                 cur.execute(insertid,(categorytest[i],borrower_id))
-                selbook = """SELECT stock FROM WHERE book_id = %s"""
-                print(categorytest)
+                selbook = """SELECT stock FROM book WHERE book_id = %s"""
                 cur.execute(selbook,(categorytest[i],))
-                book = cur.fetchall()
+                book = cur.fetchall()[0][0]
                 print(book)
                 updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
                 cur.execute(updatebook,(book-1,(categorytest[i])))

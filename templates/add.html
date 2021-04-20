@@ -1,7 +1,6 @@
 {% extends 'base_layout.html' %}
 {% include 'includes/_navbaradmin.html' %}
 {% block body %}
-
 <div class="mt">
   <div class="row">
     <div class="col-md-12">
@@ -66,7 +65,7 @@
                   <form>
                     <input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
                       placeholder="Search for names..">
-                  <br>
+                    <br>
                 </div>
               </div>
             </div>
@@ -91,10 +90,11 @@
                 <td>{{i[3]}}</td>
                 <td>{{i[4]}}</td>
                 <td><a href="/update/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
-                    aria-hidden="true"></i>
-                    <button data-id="{{ i[0] }}" class="btn btn-danger delete" data-target="#confirm"
-                    data-toggle="confirm">ลบ</i></button></td>
-
+                    aria-hidden="true">
+                    <button data-id="{{i[0]}}" class="btn btn-danger delete" data-target="#confirm"
+                    data-toggle="confirm">ลบ</i></button>
+                  </td>
+                   
               </tr>
               {% endfor %}
             </tbody>
@@ -104,8 +104,7 @@
     </div>
   </div>
 </div>
-
-<div class="modal fade" id="confirm" role="dialog">
+<div class="modal fade" id="confirm">
   <div class="modal-dialog">
     <!-- Modal content-->
     <div class="modal-content">
@@ -121,10 +120,8 @@
       </div>
     </div>
   </div>
-</div>
-
 <script>
-function myFunction() {
+  function myFunction() {
     var filter = event.target.value.toUpperCase();
     var rows = document.querySelector("#Searchtable tbody").rows;
 
@@ -142,19 +139,20 @@ function myFunction() {
       }
     }
   }
-
   $(document).ready(function () {
-    $(".delete").click(function () {
-      var id = $(this).data("id");
-      $(".yes").data("id", id);
-      var title = $(".yes").data("id");
-      $("#confirm").modal();
-    });
-    $(".yes").click(function () {
-      var id = $(this).data("id");
-      window.location.href = "/delete/" + id;
-    });
+  $(".delete").click(function () {
+    var id = $(this).data("id");
+    $(".yes").data("id", id);
+    var title = $(".yes").data("id");
+    $("#confirm").modal();
   });
+  $(".yes").click(function () {
+    var id = $(this).data("id");
+    alert(id)
+    window.location.href = "/delete/" + id;
+    });
+   
+});
 </script>
 
 

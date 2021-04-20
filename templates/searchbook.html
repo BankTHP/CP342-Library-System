@@ -38,7 +38,7 @@
                 <td>{{i[6]}}</td>
                 <td>{{i[7]}}</td>
                 {%if i[5] == 0%}
-                <td>ยังไม่ถูกยืม</td>
+                <td>ถูกยืมหมดแล้ว</td>
                 {%elif i[5] > 0 %}
                 <td>{{i[5]}}</td>
                 {%endif%}
@@ -60,10 +60,10 @@
     var rows = document.querySelector("#Searchtable tbody").rows;
 
     for (var i = 0; i < rows.length; i++) {
-      var firstCol = rows[i].cells[0].textContent.toUpperCase();
-      var secondCol = rows[i].cells[1].textContent.toUpperCase();
-      var tCol = rows[i].cells[2].textContent.toUpperCase();
-      var fCol = rows[i].cells[3].textContent.toUpperCase();
+      var firstCol = rows[i].cells[1].textContent.toUpperCase();
+      var secondCol = rows[i].cells[2].textContent.toUpperCase();
+      var tCol = rows[i].cells[3].textContent.toUpperCase();
+      var fCol = rows[i].cells[4].textContent.toUpperCase();
       
       if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol
         .indexOf(filter) > -1 ) {
