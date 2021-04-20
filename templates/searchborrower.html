@@ -8,15 +8,26 @@
         <div class="card text-left">
           <div class="card-body">
             <div class="row">
-              
               <div class="col-sm">
+                {% with messages = get_flashed_messages()%}
+                {% if messages %}
+                {% for msg in messages%}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  {{msg}}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                {%endfor%}
+                {%endif%}
+                {% endwith%}
                 <div class="form">
                   <form action="/searchborrower" method="post">
-                    <h5 class="text-center">ค้นหา</h5><input type="text" name="stdid"" class="form-control" onkeyup="myFunction()"
-                      placeholder="ค้นหาด้วยรหัสนิสิต" title="Type in a name">
-                      <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="Submit">
-                      </div>
+                    <h5 class="text-center">ค้นหา</h5><input type="text" name="stdid" class="form-control"
+                      onkeyup="myFunction()" placeholder="ค้นหาด้วยรหัสนิสิต" title="Type in a name">
+                    <div class="form-group">
+                      <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
                   </form>
                   <br>
                 </div>
@@ -27,7 +38,7 @@
             <thead>
               <tr>
                 <th>รหัสนิสิต</th>
-                <th>ชื่อผู้แต่ง</th>
+                <th>ชื่อหนังสือ</th>
                 <th>นามสกุลผู้แต่ง</th>
                 <th>สถานะหนังสือ</th>
               </tr>
@@ -35,7 +46,7 @@
             <tbody style="background-color: white">
               {% for i in data %}
               <tr>
-                <td>{{i[0]}}</td>
+                <td>{{i[3]}}</td>
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}}</td>
                 <td>{{i[3]}}</td>

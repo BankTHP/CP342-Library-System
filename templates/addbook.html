@@ -22,7 +22,7 @@
             <h5 class="text-center">เพิ่มหนังสือ</h5>
             <div class="col-sm">
               <div class="form">
-                <form action="/addbook" method="post">
+                <form action="/addbook" method="post" name="myForm" onsubmit="return validateForm()">
                   <div class="form-group">
                     <label >ชื่อหนังสือ :</label>
                     <input type="text" id="title" name="title" class="form-control" placeholder="ชื่อหนังสือ">
@@ -146,6 +146,18 @@
 $(function(){
   $('.select2-multi').select2();
 });
+function validateForm() {
+  var a = document.forms["myForm"]["title"].value;
+  var b = document.forms["myForm"]["floor"].value;
+  var c = document.forms["myForm"]["author_id"].value;
+  var d = document.forms["myForm"]["c_id"].value;
+  var e = document.forms["myForm"]["publisher"].value;
+  var f = document.forms["myForm"]["stock"].value;
+  if (a == "" || b == "" || c == "" || d == "" || e == "" || f == "" ) {
+    alert("โปรดกรอกข้อมูลให้ครบ!");
+    return false;
+  }
+}
 function myFunction() {
   var filter = event.target.value.toUpperCase();
     var rows = document.querySelector("#Searchtable tbody").rows;

@@ -3,18 +3,7 @@ from flask import Flask,render_template,request,redirect,g,session,url_for,flash
 import os 
 import psycopg2
 
-class User:
-    def __init__(self, id, username, password):
-        self.id = id
-        self.username = username
-        self.password = password
 
-    def __repr__(self):
-        return f'<User: {self.username}>'
-users = []
-users.append(User(id=1, username='admin', password='admin'))
-users.append(User(id=2, username='bank', password='bank'))
-users.append(User(id=3, username='kae', password='kae'))
 
 
 con=psycopg2.connect(
@@ -26,15 +15,8 @@ con=psycopg2.connect(
 
 
 app = Flask(__name__)
-app.secret_key = "kaebank"
+app.secret_key = os.urandom(24)
 
-@app.before_request
-def before_request():
-    g.user = None
-
-    if 'user_id' in session:
-        user = [x for x in users if x.id == session['user_id']][0]
-        g.user = user
 
 @app.route('/')
 def index():
@@ -42,20 +24,24 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        session.pop('user_id', None)
-
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == 'POST': 
+        session.pop('user',None)
         
-        user = [x for x in users if x.username == username][0]
-        if user and user.password == password:
-            session['user_id'] = user.id
+        if request.form['password'] == 'admin' :
+            session['user']  = request.form["username"]
             return redirect(url_for('adminpages'))
 
-        return redirect(url_for('login'))
+    return render_template("login.html")
 
-    return render_template('login.html')
+@app.before_request
+def before_login():
+    g.user = None 
+    if 'user' in session :
+        g.user = session['user']
+@app.route('/logout')
+def logout():
+   session.pop('user', None)
+   return redirect(url_for('login'))
 
 @app.route('/adminpages')
 def adminpages():
@@ -125,7 +111,6 @@ def update(id):
 
 @app.route('/delete/<string:id>')
 def delete(id):
-    print(id)
     if not g.user:
         return redirect(url_for('login'))
     try :  
@@ -274,8 +259,6 @@ def updatebook(id):
             publisher = request.form["publisher"] 
             stock = request.form["stock"]
             category = request.form["c_id"].split('-')
-            print("bookid: " + bookid)
-            print("title: " + title)
             
             pg_update = """Update book set author_id = %s , booktitle = %s , floor = %s , book_publisher = %s , stock = %s where book_id = %s"""
             cur.execute(pg_update, (author_id,title,floor,publisher,stock,bookid))            
@@ -323,21 +306,23 @@ def deletebook(id):
         cur.close()
         return  redirect('/addbook')
 
-# @app.route('/searchborrower', methods=["POST","GET"])
-# def searchborrower():  
-#     if request.method == 'GET' :
-#         return render_template("searchborrower.html")
-#     if request.method == "POST" : 
-#         try :
-#             cur=con.cursor() 
-#             stdid = request.form["stdid"] 
-#             searchbooks = """SELECT booktitle,returndate FROM  borrower natural join borrowers_books natural join borrowers_books where std_id = %s"""
-#             cur.execute(searchbooks,(stdid,))
-#             result = cur.fetchall()
-#         except (Exception, psycopg2.Error) as error:
-#             flash("ERROR ไม่พบข้อมูลในระบบ", "info")
+@app.route('/searchborrower', methods=["POST","GET"])
+def searchborrower():  
+    if request.method == 'POST':
+        cur =con.cursor()
+        try :
+            x = request.form["stdid"]
+            selborrower = """SELECT * FROM borrower NATURAL JOIN borrowers_books NATURAL JOIN book WHERE std_id = %s"""
+            cur.execute(selborrower,(x,))
+            result = cur.fetchall()
+            return render_template("searchborrower.html",data = result)
+        except (Exception, psycopg2.Error) as error:
+            flash("ไม่พบข้อมูล")
+            return redirect('/searchborrower')
+        finally : 
+            con.commit()
+    return render_template("searchborrower.html")
     
-#     return render_template("searchborrower.html",data=result)
 
 @app.route('/searchbooks')
 def searchbooks():   

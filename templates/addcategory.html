@@ -22,7 +22,8 @@
                         <h5 class="text-center">เพิ่มประเภทหนังสือ</h5>
                         <div class="col-sm">
                             <div class="form">
-                                <form action="/addcategory" method="post">
+                                <form action="/addcategory" method="post" name="myForm"
+                                    onsubmit="return validateForm()">
                                     <div class="form-group">
                                         <label for="name">ชื่อประเภท :</label>
                                         <input type="text" id="name" name="name" class="form-control"
@@ -111,6 +112,14 @@
     </div>
 </div>
 <script>
+    function validateForm() {
+        var a = document.forms["myForm"]["title"].value;
+        var b = document.forms["myForm"]["des"].value;
+        if (a == "" || b == "" ) {
+            alert("โปรดกรอกข้อมูลให้ครบ!");
+            return false;
+        }
+    }
     $(function () {
         $('.select2-multi').select2();
     });

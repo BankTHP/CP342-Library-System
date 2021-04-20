@@ -22,7 +22,7 @@
             <h5 class="text-center">เพิ่มผู้แต่ง</h5>
             <div class="col-sm">
               <div class="form">
-                <form action="/addauthor" method="post">
+                <form action="/addauthor" method="post" name="myForm" onsubmit="return validateForm()">
                   <div class="form-group">
                     <label for="fname">ชื่อผู้แต่ง :</label>
                     <input type="text" id="name" name="name" class="form-control" placeholder="ชื่อ">
@@ -114,6 +114,14 @@
   </div>
 </div>
 <script>
+  function validateForm() {
+  var a = document.forms["myForm"]["name"].value;
+  var b = document.forms["myForm"]["lname"].value;
+  if (a == "" || b == "") {
+    alert("โปรดกรอกข้อมูลให้ครบ!");
+    return false;
+  }
+}
   function myFunction() {
     var filter = event.target.value.toUpperCase();
     var rows = document.querySelector("#Searchtable tbody").rows;
