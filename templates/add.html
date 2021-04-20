@@ -7,10 +7,22 @@
       <div class="touch">
         <div class="card">
           <div class="card-body">
+            {% with messages = get_flashed_messages()%}
+            {% if messages %}
+            {% for msg in messages%}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{msg}}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            {%endfor%}
+            {%endif%}
+            {% endwith%}
             <h5 class="text-center">เพิ่มข้อมูลนักเรียน</h5>
             <div class="col-sm">
               <div class="form">
-                <form action="/addstudent" method="post">
+                <form action="/addstudent" name="myForm" method="post" onsubmit="return validateForm()">
                   <div class="form-group">
                     <label for="fname">ID:</label>
                     <input type="number" class="form-control" id="s_id" name="s_id" placeholder="ID">
@@ -66,6 +78,7 @@
                     <input type="text" id="myinput" class="form-control" onkeyup="myFunction()"
                       placeholder="Search for names..">
                     <br>
+                  </form>
                 </div>
               </div>
             </div>
@@ -121,6 +134,16 @@
     </div>
   </div>
 <script>
+  function validateForm() {
+  var a = document.forms["myForm"]["fname"].value;
+  var b = document.forms["myForm"]["lname"].value;
+  var c = document.forms["myForm"]["major"].value;
+  var d = document.forms["myForm"]["fname"].value;
+  if (a == "" || b == "" || c == "" || d == "") {
+    alert("โปรดกรอกข้อมูลให้ครบ!");
+    return false;
+  }
+}
   function myFunction() {
     var filter = event.target.value.toUpperCase();
     var rows = document.querySelector("#Searchtable tbody").rows;
@@ -148,7 +171,6 @@
   });
   $(".yes").click(function () {
     var id = $(this).data("id");
-    alert(id)
     window.location.href = "/delete/" + id;
     });
    

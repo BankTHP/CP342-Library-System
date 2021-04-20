@@ -11,11 +11,13 @@
                             <h4 class=text-center>แก้ไขข้อมูล</h4>
                             <div class="card-body">
                                 <div class="form-group">
+
+
                                     <h4>book id</h4>
-                                    <input type="integer" placeholder="รหัสหนังสือ" class="form-control" name="book_id"
+                                    <input type="integer" placeholder="รหัสหนังสือ" class="form-control" name="book_id" id = "book_id" disabled
                                         value="{{ data[0][1]}}" /><br>
                                     <h4>author id</h4>
-                                    <select id="a_id" name="author_id">
+                                    <select id="a_id" name="author_id" id = "author_id">
                                         {% for i in data2 %}
                                         <option disabled="disabled" value="{{i[0]}}">{{i[0]}} | {{i[1]}} {{i[2]}}
                                         </option>
@@ -25,16 +27,19 @@
                                         {% endfor %}
                                     </select>
                                     <br><br>
+
+
+
                                     <h4>Title</h4>
-                                    <input type="text" placeholder="title" class="form-control" name="title"
+                                    <input type="text" placeholder="title" class="form-control" name="title" id = "title"
                                         value="{{data[0][3]}}" /><br>
                                     <h4>floor</h4>
-                                    <input type="text" placeholder="floor" class="form-control" name="floor"
+                                    <input type="number" placeholder="floor" class="form-control" name="floor" id = "floor" max="6" min="1"
                                         value="{{data[0][4]}}" /><br>
                                     <h4>publisher :</h4>
-                                    <input type="date" class="form-control" name="year" value="{{data[0][5]}}" /><br>
+                                    <input type="text" class="form-control" name="publisher" id = "publisher" value="{{data[0][5]}}" /><br>
                                     <h4>stock :</h4>
-                                    <input type="text" class="form-control" name="stock" value="{{data[0][6]}}" /><br>
+                                    <input type="text" class="form-control" name="stock" id = "stock"   value="{{data[0][6]}}" /><br>
                                     <select id="c_id" name="c_id" class="form-control select2-multi"
                                         multiple="multiple">
                                         {% for k in data %}
@@ -45,6 +50,8 @@
                                         <option value="{{l[0]}}">{{l[0]}} | {{l[1]}} {{l[2]}}</option>
                                         {% endfor %}
                                     </select>
+
+
                                 </div>
                             </div>
                         </form>
@@ -86,10 +93,6 @@
     $('#stock').change(function () {
         stock = $(this).val();
     })
-
-    function myFunction() {
-        alert(c_ids)
-    }
     $(document).ready(function () {
         $("#SubmitBtn").click(function () {
             $.post("updatebook", {
