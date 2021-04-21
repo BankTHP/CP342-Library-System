@@ -181,7 +181,6 @@ def updateauthor(id):
 
 @app.route('/deleteauthor/<string:id>')
 def deleteauthor(id):
-    print(id)
     if not g.user:
         return redirect(url_for('login'))
     try :
@@ -420,7 +419,6 @@ def addborrowers():
             addborrower = """insert into borrower (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
             cur.execute(addborrower,(std_id,borrowerdate,returndate))
             x = cur.fetchone()[0]
-            print(books)
             updatebook(books,x)
         except (Exception, psycopg2.Error) as error:     
             print(error)
@@ -503,7 +501,6 @@ def updateborrower(id):
                 selbook = """SELECT stock FROM book WHERE book_id = %s"""
                 cur.execute(selbook,(categorytest[i],))
                 book = cur.fetchall()[0][0]
-                print(book)
                 updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
                 cur.execute(updatebook,(book-1,(categorytest[i])))
         except (Exception, psycopg2.Error) as error:

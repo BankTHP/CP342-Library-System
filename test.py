@@ -26,14 +26,16 @@ borrower_id = 34
 # cur.execute(insertbook)
 # x = cur.fetchall()
 cur=con.cursor() 
-selborrower = """SELECT * FROM borrowers_books natural join book WHERE borrower_id = %s"""
-cur.execute(selborrower,(borrower_id,))
-book = cur.fetchall()
+# selborrower = """SELECT * FROM borrowers_books natural join book WHERE borrower_id = %s"""
+# cur.execute(selborrower,(borrower_id,))
+# book = cur.fetchall()
 
-for i in range(len(book)):
-    updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
-    cur.execute(updatebook,((book[i][6]+1),book[i][0]))
-    con.commit()
-delstd2 = """DELETE FROM borrower WHERE borrower_id = %s returning borrower_id"""
-cur.execute(delstd2,(borrower_id,))
-con.commit()
+# for i in range(len(book)):
+#     updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
+#     cur.execute(updatebook,((book[i][6]+1),book[i][0]))
+#     con.commit()
+# delstd2 = """DELETE FROM borrower WHERE borrower_id = %s returning borrower_id"""
+# cur.execute(delstd2,(borrower_id,))
+# con.commit()
+SQL  = """SELECT book_id,ARRAY_TO_STRING(ARRAY_AGG(categorylist.cat_id), ',') as หมวดหมู่หนังสือ FROM book NATURAL JOIN category NATURAL JOIN categorylist GROUP BY book_id"""
+cur.execute(SQL)
