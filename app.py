@@ -474,6 +474,10 @@ def updateborrower(id):
             cur=con.cursor() 
             borrower_id = request.form['borrower_id']
             book_id = request.form["book_id"].split('-')
+            borrowerdate = request.form["borrower_date"]
+            returndate = request.form["returndate"]
+            updateborrower = """UPDATE borrower SET returndate=%s, borrowerdate= %s WHERE borrwer_id = %s;"""
+            cur.execute(updateborrower,(returndate,borrowerdate,borrower_id))
             book = """SELECT * FROM borrowers_books where borrower_id = %s"""
             cur.execute(book,(borrower_id,))
             xp = cur.fetchall()
@@ -517,7 +521,7 @@ def deleteborrower(id):
         return redirect(url_for('login'))
     try :
         cur=con.cursor() 
-        selborrower = """SELECT * FROM borrowers_books natural join book WHERE borrower_id = %s"""
+        selborrower = """SELECT * FROM borrowers_books natural join book WHERE borrower_id = %s"""  #53
         cur.execute(selborrower,(id,))
         book = cur.fetchall()
         for i in range(len(book)):

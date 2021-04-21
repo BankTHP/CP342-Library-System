@@ -22,7 +22,7 @@
             <h5 class="text-center">เพิ่มข้อมูลนักเรียน</h5>
             <div class="col-sm">
               <div class="form">
-                <form action="/addstudent"  method="post" name="myForm" onsubmit="return validateForm()">
+                <form action="/addstudent" method="post" name="myForm" onsubmit="return validateForm()">
                   <div class="form-group">
                     <label for="fname">ID:</label>
                     <input type="number" class="form-control" id="s_id" name="s_id" placeholder="ID">
@@ -105,9 +105,9 @@
                 <td><a href="/update/{{ i[0] }}" class="btn btn-success">แก้ไข</a><i class="fa fa-pencil"
                     aria-hidden="true">
                     <button data-id="{{i[0]}}" class="btn btn-danger delete" data-target="#confirm"
-                    data-toggle="confirm">ลบ</i></button>
-                  </td>
-                   
+                      data-toggle="confirm">ลบ</i></button>
+                </td>
+
               </tr>
               {% endfor %}
             </tbody>
@@ -117,6 +117,7 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="confirm">
   <div class="modal-dialog">
     <!-- Modal content-->
@@ -133,49 +134,50 @@
       </div>
     </div>
   </div>
-<script>
-  function validateForm() {
-  var a = document.forms["myForm"]["fname"].value;
-  var b = document.forms["myForm"]["lname"].value;
-  var c = document.forms["myForm"]["major"].value;
-  var d = document.forms["myForm"]["fname"].value;
-  if (a == "" || b == "" || c == "" || d == "") {
-    alert("โปรดกรอกข้อมูลให้ครบ!");
-    return false;
-  }
-}
-  function myFunction() {
-    var filter = event.target.value.toUpperCase();
-    var rows = document.querySelector("#Searchtable tbody").rows;
-
-    for (var i = 0; i < rows.length; i++) {
-      var firstCol = rows[i].cells[0].textContent.toUpperCase();
-      var secondCol = rows[i].cells[1].textContent.toUpperCase();
-      var tCol = rows[i].cells[2].textContent.toUpperCase();
-      var fCol = rows[i].cells[3].textContent.toUpperCase();
-      var fvCol = rows[i].cells[4].textContent.toUpperCase();
-      if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol
-        .indexOf(filter) > -1 || fvCol.indexOf(filter) > -1) {
-        rows[i].style.display = "";
-      } else {
-        rows[i].style.display = "none";
+  <script>
+    function validateForm() {
+      var a = document.forms["myForm"]["fname"].value;
+      var b = document.forms["myForm"]["lname"].value;
+      var c = document.forms["myForm"]["major"].value;
+      var d = document.forms["myForm"]["fname"].value;
+      if (a == "" || b == "" || c == "" || d == "") {
+        alert("โปรดกรอกข้อมูลให้ครบ!");
+        return false;
       }
     }
-  }
-  $(document).ready(function () {
-  $(".delete").click(function () {
-    var id = $(this).data("id");
-    $(".yes").data("id", id);
-    var title = $(".yes").data("id");
-    $("#confirm").modal();
-  });
-  $(".yes").click(function () {
-    var id = $(this).data("id");
-    window.location.href = "/delete/" + id;
+
+    function myFunction() {
+      var filter = event.target.value.toUpperCase();
+      var rows = document.querySelector("#Searchtable tbody").rows;
+
+      for (var i = 0; i < rows.length; i++) {
+        var firstCol = rows[i].cells[0].textContent.toUpperCase();
+        var secondCol = rows[i].cells[1].textContent.toUpperCase();
+        var tCol = rows[i].cells[2].textContent.toUpperCase();
+        var fCol = rows[i].cells[3].textContent.toUpperCase();
+        var fvCol = rows[i].cells[4].textContent.toUpperCase();
+        if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol
+          .indexOf(filter) > -1 || fvCol.indexOf(filter) > -1) {
+          rows[i].style.display = "";
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+    $(document).ready(function () {
+      $(".delete").click(function () {
+        var id = $(this).data("id");
+        $(".yes").data("id", id);
+        var title = $(".yes").data("id");
+        $("#confirm").modal();
+      });
+      $(".yes").click(function () {
+        var id = $(this).data("id");
+        window.location.href = "/delete/" + id;
+      });
+
     });
-   
-});
-</script>
+  </script>
 
 
-{% endblock %}
+  {% endblock %}
