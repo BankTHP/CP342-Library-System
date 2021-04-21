@@ -39,16 +39,14 @@
               <tr>
                 <th>รหัสนิสิต</th>
                 <th>ชื่อหนังสือ</th>
-                <th>นามสกุลผู้แต่ง</th>
-                <th>สถานะหนังสือ</th>
+                <th>Return Date</th>
               </tr>
             </thead>
             <tbody>
               {% for i in data %}
               <tr>
-                <td>{{i[3]}}</td>
-                <td>{{i[1]}}</td>
-                <td>{{i[2]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[6]}}</td>
                 <td>{{i[3]}}</td>
               </tr>
               {% endfor %}
