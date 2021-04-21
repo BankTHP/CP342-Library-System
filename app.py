@@ -426,7 +426,6 @@ def addborrowers():
             con.commit()
             cur.close()
             return redirect('/addborrowers') 
-
     if request.method == 'GET' :
         try:
             cur=con.cursor() 
@@ -464,7 +463,7 @@ def updateborrower(id):
         selborrower = """SELECT * FROM borrower NATURAL JOIN student NATURAL JOIN borrowers_books natural join book WHERE borrower_id = %s """
         cur.execute(selborrower,(id,))
         update = cur.fetchall()
-        selborrower1 = """SELECT * FROM book """
+        selborrower1 = """SELECT * FROM book"""
         cur.execute(selborrower1)
         choice= cur.fetchall()
         return render_template("updateborrower.html",data = update,data2 = choice)
@@ -474,9 +473,9 @@ def updateborrower(id):
             cur=con.cursor() 
             borrower_id = request.form['borrower_id']
             book_id = request.form["book_id"].split('-')
-            borrowerdate = request.form["borrower_date"]
+            borrowerdate = request.form["borrowerdate"]
             returndate = request.form["returndate"]
-            updateborrower = """UPDATE borrower SET returndate=%s, borrowerdate= %s WHERE borrwer_id = %s;"""
+            updateborrower = """UPDATE borrower SET returndate=%s, borrowerdate= %s WHERE borrower_id = %s;"""
             cur.execute(updateborrower,(returndate,borrowerdate,borrower_id))
             book = """SELECT * FROM borrowers_books where borrower_id = %s"""
             cur.execute(book,(borrower_id,))

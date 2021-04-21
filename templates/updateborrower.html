@@ -28,8 +28,11 @@
                                         <option value="{{k[0]}}" selected="selected">{{k[0]}} | {{k[10]}} </option>
                                         {% endfor %}
                                         {% for i in data2 %} 
+                                        {%if data2[0].value == data2[0].value %}
                                         <option value="{{i[0]}}">{{i[0]}} | {{i[2]}} </option>
+                                        {%endif%}
                                         {% endfor %} 
+                                        
                                     </select>
                                 </div>
                             </div>
@@ -50,7 +53,8 @@
     });
     var borrowerdate = ("{{data[0][4]}}");
     var returndate = ("{{data[0][3]}}");
-
+    var book_id = $('#book_id').val();
+    var books = book_id.join("-");
 
     $('#returndate').change(function () {
         returndate = $(this).val();
