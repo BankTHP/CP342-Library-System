@@ -70,7 +70,7 @@ def home():
             addstudent = """insert into student values (%s,%s,%s,%s,%s)"""
             cur.execute(addstudent,(id,name,lastname,major,year))
         except (Exception, psycopg2.Error) as error:     
-            print("Error จ้า", error)
+            flash("นิสิตคนนี้ยังมีชื่อในระบบแล้ว", "info")
         finally : 
             con.commit()
             cur.close() 
@@ -409,6 +409,7 @@ def deletecategory(id):
 def addborrowers():
     if not g.user:
         return redirect(url_for('login'))
+    
     if request.method == 'POST' :
         try : 
             cur=con.cursor() 
@@ -419,11 +420,22 @@ def addborrowers():
             addborrower = """insert into borrower (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
             cur.execute(addborrower,(std_id,borrowerdate,returndate))
             x = cur.fetchone()[0]
-            updatebook(books,x)
+            for i in range(len(books)) :
+                selbook = """SELECT * FROM book WHERE book_id = %s"""
+                cur.execute(selbook,(books[i],))
+                book = cur.fetchall()[0][5]
+                if book == 0 :  
+                    con.rollback()
+                else :
+                    updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
+                    cur.execute(updatebook,(book-1,(books[i])))
+                    borrowbook = """insert into borrowers_books (book_id, borrower_id) values (%s,%s)"""
+                    cur.execute(borrowbook,(books[i],x))
+                    con.commit()
         except (Exception, psycopg2.Error) as error:     
-            print(error)
+            flash('เกิดข้อผิดพลาดทางระบบ')
+            print(error)            
         finally : 
-            con.commit()
             cur.close()
             return redirect('/addborrowers') 
     if request.method == 'GET' :
@@ -440,18 +452,6 @@ def addborrowers():
             return redirect('/addborrowers')
 
     return render_template("addborrower.html",data = result,data2 = stdresult,data3 =bookresult)   
-
-def updatebook(books,x) :
-    cur=con.cursor()
-    for i in range(len(books)) :
-        selbook = """SELECT * FROM book WHERE book_id = %s"""
-        cur.execute(selbook,(books[i],))
-        book = cur.fetchall()[0][5]
-        updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
-        cur.execute(updatebook,(book-1,(books[i])))
-        borrowbook = """insert into borrowers_books (book_id, borrower_id) values (%s,%s)"""
-        cur.execute(borrowbook,(books[i],x))
-        con.commit()
 
 
 @app.route('/updateborrower/<string:id>',methods=["GET", "POST"])
