@@ -37,17 +37,17 @@
           <table id="Searchtable" class="table table-bordered">
             <thead class="thead-dark">
               <tr>
-                <th>รหัสนิสิต</th>
-                <th>ชื่อหนังสือ</th>
-                <th>Return Date</th>
+                <th>รหัสการยืม</th>
+                <th>หนังสือที่ต้องคืน</th>
+                <th>กำหนดส่งคืน</th>
               </tr>
             </thead>
             <tbody>
               {% for i in data %}
               <tr>
-                <td>{{i[4]}}</td>
-                <td>{{i[6]}}</td>
-                <td>{{i[3]}}</td>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
               </tr>
               {% endfor %}
             </tbody>

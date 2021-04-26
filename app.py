@@ -20,7 +20,7 @@ app.secret_key = os.urandom(24)
 
 @app.route('/')
 def index():
-    return render_template("home.html")
+    return render_template("home.html",title = "WELCOME TO BK PROJECT")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -35,7 +35,7 @@ def login():
             return render_template("login.html",error = errorflash)
 
 
-    return render_template("login.html")
+    return render_template("login.html",title = "LOGIN")
 
 @app.before_request
 def before_login():
@@ -52,7 +52,7 @@ def adminpages():
     if not g.user:
         return redirect(url_for('login'))
     
-    return render_template("admin.html")
+    return render_template("admin.html",title = "หน้าจัดการระบบ")
 
 
 @app.route('/addstudent', methods=["POST","GET"])
@@ -82,7 +82,7 @@ def home():
         cur.execute("SELECT * FROM student ORDER BY std_id")
         result = cur.fetchall()
 
-    return render_template("add.html",data = result)   
+    return render_template("add.html",data = result,title = "CRUD STUDENT")   
 
 
 @app.route('/update/<string:id>',methods=["GET", "POST"])
@@ -94,7 +94,7 @@ def update(id):
         stdselect = """SELECT * FROM student WHERE std_id = %s"""
         cur.execute(stdselect,(id,))
         update = cur.fetchall()
-        return render_template("update.html",data = update)
+        return render_template("update.html",data = update,title = "แก้ไขข้อมูลนิสิต")
     if request.method == 'POST':
         try : 
             cur=con.cursor()
@@ -147,7 +147,7 @@ def addauthor():
         cur=con.cursor() 
         cur.execute("SELECT * FROM author order by author_id ")
         result = cur.fetchall()
-        return render_template("addauthor.html",data = result)
+        return render_template("addauthor.html",data = result,title = "CRUD AUTHOR")
 
     
     
@@ -161,7 +161,7 @@ def updateauthor(id):
         updateathor = """SELECT * FROM author WHERE author_id = %s ORDER BY author_id"""
         cur.execute(updateathor,id)
         update = cur.fetchall()
-        return render_template("updateauthor.html",data = update)
+        return render_template("updateauthor.html",data = update,title = "แก้ไขข้อมูลนักแต่ง")
     if request.method == 'POST':
         id = request.form["id"] 
         name = request.form["firstname"] 
@@ -208,7 +208,7 @@ def addbook():
         authorresult = cur.fetchall() 
         cur.execute("SELECT * FROM categorylist ORDER BY cat_id")
         categoryresult = cur.fetchall()
-        return render_template("addbook.html",data = result,data2 = authorresult,data3 = categoryresult)
+        return render_template("addbook.html",data = result,data2 = authorresult,data3 = categoryresult,title = "CRUD BOOK")
 
     if request.method == 'POST' : 
         adddbook()
@@ -250,7 +250,7 @@ def updatebook(id):
         cur.execute(updatecategory)
         category = cur.fetchall()
         cur.close()
-        return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate,data4 = category)
+        return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate,data4 = category,title = "แก้ไขข้อมูลหนังสือ")
 
     if request.method == 'POST':
         try:
@@ -315,7 +315,7 @@ def searchborrower():
         cur =con.cursor()
         try :
             x = request.form["stdid"]
-            selborrower = """SELECT * FROM borrower NATURAL JOIN borrowers_books NATURAL JOIN book WHERE std_id = %s"""
+            selborrower = """SELECT borrower_id,ARRAY_TO_STRING(ARRAY_AGG(book.booktitle), ', '),returndate FROM borrower NATURAL JOIN borrowers_books NATURAL JOIN book WHERE std_id = %s GROUP BY borrower_id,returndate """
             cur.execute(selborrower,(x,))
             result = cur.fetchall()
             if (result == []) :
@@ -323,21 +323,23 @@ def searchborrower():
                 return render_template("searchborrower.html",data = test)
             else :
                 return render_template("searchborrower.html",data = result)
+
         except (Exception, psycopg2.Error) as error:
             flash("ไม่พบข้อมูล")
             return redirect('/searchborrower')
         finally : 
             con.commit()
-    return render_template("searchborrower.html")
+    return render_template("searchborrower.html",title = "ตรวจสอบผู้ยืม")
     
 
 @app.route('/searchbooks')
 def searchbooks():   
     cur=con.cursor() 
-    searchbooks = """SELECT * FROM  book natural join author order by book_id;"""
+    searchbooks = """SELECT booktitle,ARRAY_TO_STRING(ARRAY_AGG(categorylist.des), ' , ') as หมวดหมู่หนังสือ,author_firstname,author_lastname,stock 
+    FROM book NATURAL JOIN category NATURAL JOIN categorylist NATURAL JOIN author  GROUP BY booktitle,author_firstname,author_lastname,stock;"""
     cur.execute(searchbooks)
     result = cur.fetchall()
-    return render_template("searchbook.html",data = result)
+    return render_template("searchbook.html",data = result,title = "ค้นหาหนังสือ")
 
 @app.route('/addcategory', methods=["POST","GET"])
 def addcaterory():
@@ -364,7 +366,7 @@ def addcaterory():
 
         result = cur.fetchall()
 
-    return render_template("addcategory.html",data = result)   
+    return render_template("addcategory.html",data = result,title = "CRUD CATEGORY")   
 
 @app.route('/updatecategory/<string:id>',methods=["GET", "POST"])
 def updatecategory(id):
@@ -375,7 +377,7 @@ def updatecategory(id):
         updatecategory = """SELECT * FROM categorylist WHERE cat_id = %s """
         cur.execute(updatecategory,id)
         update = cur.fetchall()
-        return render_template("updatecategory.html",data = update)
+        return render_template("updatecategory.html",data = update,title = "หน้าแก้ไขข้อมูล Category")
     if request.method == 'POST':
         try : 
             cur=con.cursor() 
@@ -451,7 +453,7 @@ def addborrowers():
             print(error)
             return redirect('/addborrowers')
 
-    return render_template("addborrower.html",data = result,data2 = stdresult,data3 =bookresult)   
+    return render_template("addborrower.html",data = result,data2 = stdresult,data3 =bookresult,title = "CRUD BORROWER")   
 
 
 @app.route('/updateborrower/<string:id>',methods=["GET", "POST"])
@@ -466,7 +468,7 @@ def updateborrower(id):
         selborrower1 = """SELECT * FROM book"""
         cur.execute(selborrower1)
         choice= cur.fetchall()
-        return render_template("updateborrower.html",data = update,data2 = choice)
+        return render_template("updateborrower.html",data = update,data2 = choice,title = "แก้ไขข้อมูลผู้ยืม")
 
     if request.method == 'POST':
         try : 
