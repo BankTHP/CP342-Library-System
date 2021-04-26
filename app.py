@@ -204,53 +204,92 @@ def addbook():
         cur=con.cursor() 
         cur.execute("SELECT * FROM author NATURAL JOIN book ORDER BY book_id") 
         result = cur.fetchall()
-        cur.execute("SELECT * FROM author")
+        cur.execute("SELECT * FROM author order by author_id")
         authorresult = cur.fetchall() 
         cur.execute("SELECT * FROM categorylist ORDER BY cat_id")
         categoryresult = cur.fetchall()
         return render_template("addbook.html",data = result,data2 = authorresult,data3 = categoryresult,title = "CRUD BOOK")
+        
 
     if request.method == 'POST' : 
-        adddbook()
+        try: 
+            cur=con.cursor() 
+            author_id = request.form["author_id"]
+            title = request.form["title"] 
+            floor = request.form["floor"]
+            publisher = request.form["publisher"]
+            category = request.form["c_id"].split("-")
+            stock = request.form["stock"]
+            insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,stock) values (%s,%s,%s,%s,%s) RETURNING book_id """
+            cur.execute(insertbook, (author_id,title,floor,publisher,stock))
+            con.commit()
+            x= cur.fetchall()[0][0]
+            for i in range(len(category)):
+                cateinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
+                cur.execute(cateinsert, (x,category[i]))
+            con.commit()
+        except (Exception, psycopg2.Error) as error:
+            flash("เพิ่มหนังสือไม่สำเร็จ")
+        finally:
+            return redirect('addbook')
     return redirect('/addbook')
 
 def adddbook() :
-    cur=con.cursor() 
-    author_id = request.form["author_id"]
-    title = request.form["title"] 
-    floor = request.form["floor"]
-    publisher = request.form["publisher"]
-    category = request.form["c_id"].split("-")
-    stock = request.form["stock"]
-    insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,stock) values (%s,%s,%s,%s,%s) RETURNING book_id """
-    cur.execute(insertbook, (author_id,title,floor,publisher,stock))
-    con.commit()
-    x= cur.fetchall()[0][0]
-    for i in range(len(category)):
-        cateinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
-        cur.execute(cateinsert, (x,category[i]))
-    con.commit()
-    cur.close()
+    try: 
+        cur=con.cursor() 
+        author_id = request.form["author_id"]
+        title = request.form["title"] 
+        floor = request.form["floor"]
+        publisher = request.form["publisher"]
+        category = request.form["c_id"].split("-")
+        stock = request.form["stock"]
+        insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,stock) values (%s,%s,%s,%s,%s) RETURNING book_id """
+        cur.execute(insertbook, (author_id,title,floor,publisher,stock))
+        con.commit()
+        x= cur.fetchall()[0][0]
+        for i in range(len(category)):
+            cateinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
+            cur.execute(cateinsert, (x,category[i]))
+            con.commit()
+    except (Exception, psycopg2.Error) as error:
+        flash("เพิ่มหนังสือไม่สำเร็จ")
 
 @app.route('/updatebook/<string:id>',methods=["GET", "POST"])
 def updatebook(id):
     if not g.user:
         return redirect(url_for('login'))
     if request.method == 'GET':
+
         cur=con.cursor() 
         updateshow = """SELECT * FROM book NATURAL JOIN category NATURAL JOIN categorylist  WHERE book_id = %s ORDER BY book_id"""
         cur.execute(updateshow,(id,))
         update = cur.fetchall()
+
+
         updateauthor = """SELECT * FROM author NATURAL JOIN book WHERE book_id = %s """
         cur.execute(updateauthor,(id,))
         author = cur.fetchall()
+
+
         cur.execute("SELECT * FROM author book")
         authorupdate = cur.fetchall()
         updatecategory = """SELECT * FROM categorylist order by cat_id"""
         cur.execute(updatecategory)
         category = cur.fetchall()
+
+
+        notselect = list()
+        choicefromdb = list()
+        for i in range(len(update)) :
+            choicefromdb.append(update[i][0])
+
+
+        for i in range(len(category)) : 
+            if category[i][0] not in choicefromdb :
+                notselect.append(category[i])
+
         cur.close()
-        return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate,data4 = category,title = "แก้ไขข้อมูลหนังสือ")
+        return render_template("updatebook.html",data = update,data2 = author,data3 = authorupdate,data4 = notselect,title = "แก้ไขข้อมูลหนังสือ")
 
     if request.method == 'POST':
         try:
@@ -315,7 +354,8 @@ def searchborrower():
         cur =con.cursor()
         try :
             x = request.form["stdid"]
-            selborrower = """SELECT borrower_id,ARRAY_TO_STRING(ARRAY_AGG(book.booktitle), ', '),returndate FROM borrower NATURAL JOIN borrowers_books NATURAL JOIN book WHERE std_id = %s GROUP BY borrower_id,returndate """
+            selborrower = """SELECT borrower_id,ARRAY_TO_STRING(ARRAY_AGG(book.booktitle), ', '),returndate FROM borrower NATURAL JOIN borrowers_books 
+            NATURAL JOIN book WHERE std_id = %s GROUP BY borrower_id,returndate """
             cur.execute(selborrower,(x,))
             result = cur.fetchall()
             if (result == []) :
@@ -333,10 +373,14 @@ def searchborrower():
     
 
 @app.route('/searchbooks')
+
 def searchbooks():   
+
     cur=con.cursor() 
+
     searchbooks = """SELECT booktitle,ARRAY_TO_STRING(ARRAY_AGG(categorylist.des), ' , ') as หมวดหมู่หนังสือ,author_firstname,author_lastname,stock 
     FROM book NATURAL JOIN category NATURAL JOIN categorylist NATURAL JOIN author  GROUP BY booktitle,author_firstname,author_lastname,stock;"""
+
     cur.execute(searchbooks)
     result = cur.fetchall()
     return render_template("searchbook.html",data = result,title = "ค้นหาหนังสือ")
@@ -425,7 +469,7 @@ def addborrowers():
             for i in range(len(books)) :
                 selbook = """SELECT * FROM book WHERE book_id = %s"""
                 cur.execute(selbook,(books[i],))
-                book = cur.fetchall()[0][5]
+                book = cur.fetchall()[0][5] #stock
                 if book == 0 :  
                     con.rollback()
                 else :
@@ -464,11 +508,27 @@ def updateborrower(id):
         cur=con.cursor() 
         selborrower = """SELECT * FROM borrower NATURAL JOIN student NATURAL JOIN borrowers_books natural join book WHERE borrower_id = %s """
         cur.execute(selborrower,(id,))
-        update = cur.fetchall()
+        update = cur.fetchall()       
+
+
+
         selborrower1 = """SELECT * FROM book"""
         cur.execute(selborrower1)
         choice= cur.fetchall()
-        return render_template("updateborrower.html",data = update,data2 = choice,title = "แก้ไขข้อมูลผู้ยืม")
+
+
+        notselect = list()
+        choicefromdb = list()
+        for i in range(len(update)) :
+            choicefromdb.append(update[i][0])
+
+
+        for i in range(len(choice)) : 
+            if choice[i][0] not in choicefromdb :
+                notselect.append(choice[i])
+
+        
+        return render_template("updateborrower.html",data = update,data2 = notselect,title = "แก้ไขข้อมูลผู้ยืม")
 
     if request.method == 'POST':
         try : 

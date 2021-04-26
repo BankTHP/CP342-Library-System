@@ -25,8 +25,7 @@
               <tr>
                 <th>ชื่อหนังสือ</th>
                 <th>หมวดหมู่หนังสือ</th>
-                <th>ชื่อผู้แต่ง</th>
-                <th>นามสกุลผู้แต่ง</th>
+                <th>ผู้แต่ง</th>
                 <th>จำนวนที่เหลืออยู่</th>
               </tr>
             </thead>
@@ -35,8 +34,7 @@
               <tr>
                 <td>{{i[0]}}</td>
                 <td>{{i[1]}}</td>
-                <td>{{i[2]}}</td>
-                <td>{{i[3]}}</td>
+                <td>{{i[2]}} {{i[3]}}</td>
                 {%if i[4] == 0%}
                 <td>ถูกยืมหมดแล้ว</td>
                 {%elif i[4] > 0 %}
@@ -64,10 +62,9 @@
       var secondCol = rows[i].cells[1].textContent.toUpperCase();
       var tCol = rows[i].cells[2].textContent.toUpperCase();
       var fCol = rows[i].cells[3].textContent.toUpperCase();
-      var fiveCol = rows[i].cells[4].textContent.toUpperCase();
       
       if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || tCol.indexOf(filter) > -1 || fCol
-        .indexOf(filter) > -1 || fiveCol.indexOf(filter) > -1) {
+        .indexOf(filter) > -1 ) {
         rows[i].style.display = "";
       } else {
         rows[i].style.display = "none";
