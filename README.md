@@ -1,4 +1,6 @@
 
 * Installation
+* install python
+* 
   
   
