@@ -1,4 +1,4 @@
-from typing import final
+import werkzeug
 from flask import Flask,render_template,request,redirect,g,session,url_for,flash
 import os 
 import psycopg2
@@ -268,11 +268,11 @@ def updatebook(id):
 
         updateauthor = """SELECT * FROM author NATURAL JOIN book WHERE book_id = %s """
         cur.execute(updateauthor,(id,))
+
         author = cur.fetchall()
-
-
-        cur.execute("SELECT * FROM author book")
+        cur.execute("SELECT * FROM author order by author_id")
         authorupdate = cur.fetchall()
+
         updatecategory = """SELECT * FROM categorylist order by cat_id"""
         cur.execute(updatecategory)
         category = cur.fetchall()
@@ -466,24 +466,32 @@ def addborrowers():
             addborrower = """insert into borrower (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
             cur.execute(addborrower,(std_id,borrowerdate,returndate))
             x = cur.fetchone()[0]
+            check = list()
             for i in range(len(books)) :
                 selbook = """SELECT * FROM book WHERE book_id = %s"""
                 cur.execute(selbook,(books[i],))
-                book = cur.fetchall()[0][5] #stock
-                if book == 0 :  
-                    con.rollback()
-                else :
+                book = cur.fetchall()[0][5]
+                check.append(book)
+            if (any(num == 0 for num in check)) :           
+                flash('หนังสือพึ่งถูกยืมไปแล้ว')
+                con.rollback()
+                return redirect('/addborrowers')                
+            else :
+                for i in range(len(check)) :
                     updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
-                    cur.execute(updatebook,(book-1,(books[i])))
+                    cur.execute(updatebook,(check[i]-1,books[i]))
                     borrowbook = """insert into borrowers_books (book_id, borrower_id) values (%s,%s)"""
                     cur.execute(borrowbook,(books[i],x))
-                    con.commit()
+            con.commit()
+            return redirect('/addborrowers')  
         except (Exception, psycopg2.Error) as error:     
             flash('เกิดข้อผิดพลาดทางระบบ')
-            print(error)            
-        finally : 
+            print(error)
+            con.rollback()              
+        finally :
             cur.close()
-            return redirect('/addborrowers') 
+            
+
     if request.method == 'GET' :
         try:
             cur=con.cursor() 
