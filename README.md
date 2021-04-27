@@ -1,4 +1,5 @@
-
+##Features
+  
 ## Installation
   * install Python
   * install Postgressql
@@ -12,5 +13,4 @@ To run this project
   import db.sql to your Postgressql 
   Now go to project path and change your Password , Databasename to match your postgres setup  (line 8-14)
 ```
-##Features
-  
+
