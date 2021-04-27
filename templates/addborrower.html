@@ -36,9 +36,9 @@
                     <select id="book" name="book"  class="form-control select2-multi"  multiple="multiple">
                       {% for k in data3 %}
                       {%if k[5] == 0 %}
-                      <option value="{{k[1]}}" disabled>{{k[1]}} | {{k[2]}} | {{k[6]}} {{k[7]}} </option>
+                      <option value="{{k[1]}}" disabled>{{k[2]}} | {{k[6]}} {{k[7]}} </option>
                       {%elif  k[5] > 0 %}
-                      <option value="{{k[1]}}">{{k[1]}} | {{k[2]}} | {{k[6]}} {{k[7]}} </option>
+                      <option value="{{k[1]}}">{{k[2]}} | {{k[6]}} {{k[7]}} </option>
                       {%endif%}
                       {% endfor %}
                     </select>

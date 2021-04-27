@@ -69,10 +69,11 @@ def home():
             year = request.form["year"]
             addstudent = """insert into student values (%s,%s,%s,%s,%s)"""
             cur.execute(addstudent,(id,name,lastname,major,year))
-        except (Exception, psycopg2.Error) as error:     
+            con.commit()
+        except (Exception, psycopg2.Error) as error:    
+            con.rollback() 
             flash("นิสิตคนนี้ยังมีชื่อในระบบแล้ว", "info")
         finally : 
-            con.commit()
             cur.close() 
             return redirect('/addstudent') 
 
@@ -105,11 +106,13 @@ def update(id):
             year = request.form["Year"]
             pg_update = """Update student set std_firstname = %s , std_lastname = %s ,std_major = %s ,std_year = %s where std_id = %s"""
             cur.execute(pg_update, (name,lname,major,year, id))
+            con.commit()
         except (Exception, psycopg2.Error) as error:
             print("Error selecting data from table book", error)
+            con.rollback()
             return redirect('/addstudent')
         finally:
-            con.commit()
+            
             cur.close()
             return redirect('/addstudent')
 
@@ -173,6 +176,7 @@ def updateauthor(id):
             con.commit()
             cur.close()
         except (Exception, psycopg2.Error) as error: 
+            con.rollback()
             print(error)
         finally : 
             return redirect('/addauthor')
@@ -208,6 +212,7 @@ def addbook():
         authorresult = cur.fetchall() 
         cur.execute("SELECT * FROM categorylist ORDER BY cat_id")
         categoryresult = cur.fetchall()
+        
         return render_template("addbook.html",data = result,data2 = authorresult,data3 = categoryresult,title = "CRUD BOOK")
         
 
@@ -230,29 +235,11 @@ def addbook():
             con.commit()
         except (Exception, psycopg2.Error) as error:
             flash("เพิ่มหนังสือไม่สำเร็จ")
+            con.rollback()
         finally:
+            cur.close()
             return redirect('addbook')
     return redirect('/addbook')
-
-def adddbook() :
-    try: 
-        cur=con.cursor() 
-        author_id = request.form["author_id"]
-        title = request.form["title"] 
-        floor = request.form["floor"]
-        publisher = request.form["publisher"]
-        category = request.form["c_id"].split("-")
-        stock = request.form["stock"]
-        insertbook = """INSERT INTO book (author_id,booktitle,floor,book_publisher,stock) values (%s,%s,%s,%s,%s) RETURNING book_id """
-        cur.execute(insertbook, (author_id,title,floor,publisher,stock))
-        con.commit()
-        x= cur.fetchall()[0][0]
-        for i in range(len(category)):
-            cateinsert = """INSERT INTO category (book_id, cat_id) values (%s,%s) """
-            cur.execute(cateinsert, (x,category[i]))
-            con.commit()
-    except (Exception, psycopg2.Error) as error:
-        flash("เพิ่มหนังสือไม่สำเร็จ")
 
 @app.route('/updatebook/<string:id>',methods=["GET", "POST"])
 def updatebook(id):
@@ -324,11 +311,11 @@ def updatebook(id):
             for k in range(len(categorytest)):
                 insertid = """INSERT INTO category (book_id,cat_id) VALUES (%s,%s) """
                 cur.execute(insertid,(bookid,categorytest[k]))
-
+            con.commit() 
         except (Exception, psycopg2.Error) as error:
             print(error)
+            con.rollback()
         finally : 
-            con.commit() 
             cur.close()  
             return redirect('/addbook')
         
@@ -341,10 +328,11 @@ def deletebook(id):
         cur=con.cursor() 
         deletebook = """DELETE FROM book WHERE book_id= %s"""
         cur.execute(deletebook,(id,))
+        con.commit()
     except (Exception, psycopg2.Error) as error: 
+        con.rollback()
         flash("ERROR ยังมีหนังสืออยู่ในระบบborrower", "info")
     finally :  
-        con.commit()
         cur.close()
         return  redirect('/addbook')
 
@@ -363,12 +351,12 @@ def searchborrower():
                 return render_template("searchborrower.html",data = test)
             else :
                 return render_template("searchborrower.html",data = result)
-
         except (Exception, psycopg2.Error) as error:
             flash("ไม่พบข้อมูล")
+            con.rollback()
             return redirect('/searchborrower')
         finally : 
-            con.commit()
+            cur.close()
     return render_template("searchborrower.html",title = "ตรวจสอบผู้ยืม")
     
 
@@ -399,8 +387,10 @@ def addcaterory():
             con.commit()
             cur.close()
         except (Exception, psycopg2.Error) as error:     
+            con.rollback()
             print(error)
         finally : 
+            cur.close()
             return redirect('/addcategory') 
     
 
@@ -431,6 +421,7 @@ def updatecategory(id):
             cur.execute(pg_update, (name,des,id))
             con.commit()
         except (Exception, psycopg2.Error) as error:
+            con.rollback()
             print(error)
         finally:
             cur.close()
@@ -443,11 +434,12 @@ def deletecategory(id):
     try :
         cur=con.cursor() 
         catedel = """DELETE FROM categorylist WHERE cat_id = %s"""        
-        cur.execute(catedel,id)        
+        cur.execute(catedel,id) 
+        con.commit()       
     except (Exception, psycopg2.Error) as error:
         flash("ERROR หมวดหมู่ยังเป็นประเภทของหนังสืออยู่!", "info")
+        con.rollback()
     finally:
-        con.commit()
         cur.close()
         return  redirect('/addcategory')
 
@@ -473,9 +465,9 @@ def addborrowers():
                 book = cur.fetchall()[0][5]
                 check.append(book)
             if (any(num == 0 for num in check)) :           
-                flash('หนังสือพึ่งถูกยืมไปแล้ว')
                 con.rollback()
-                return redirect('/addborrowers')                
+                flash('หนังสือพึ่งถูกยืมไปแล้ว')
+                redirect(url_for('addborrowers'))             
             else :
                 for i in range(len(check)) :
                     updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
@@ -577,6 +569,7 @@ def updateborrower(id):
                 updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
                 cur.execute(updatebook,(book-1,(categorytest[i])))
         except (Exception, psycopg2.Error) as error:
+            con.rollback()
             print(error)
             return redirect('/addborrowers')
         finally:

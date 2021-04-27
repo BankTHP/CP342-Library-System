@@ -42,7 +42,7 @@
                     <label for="author">Choose a author:</label>
                     <select id="author_id" name="author_id"  class="form-control select2-multi">
                       {% for j in data2 %}
-                      <option value="{{j[0]}}">{{j[0]}} | {{j[1]}} {{j[2]}}</option>
+                      <option value="{{j[0]}}">{{j[1]}} {{j[2]}}</option>
                       {% endfor %}
                     </select>
                   </div>
@@ -50,7 +50,7 @@
                     <label>Choose a Category:</label>
                     <select id="c_id" name="c_id"  class="form-control select2-multi"  multiple="multiple">
                       {% for k in data3 %}
-                      <option value="{{k[0]}}">{{k[0]}} | {{k[1]}} {{k[2]}}</option>
+                      <option value="{{k[0]}}">{{k[1]}} {{k[2]}}</option>
                       {% endfor %}
                     </select>                    
                     <br>
