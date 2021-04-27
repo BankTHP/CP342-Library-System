@@ -1,11 +1,13 @@
 
 ## Installation
   * install Python
-## Setup
+## Setup 
+To run this project
 ```
-  install FLASK (pip install flask)
-  install Request (pip install request)
-  install os (pip install os)
+  open cmd
+  pip install flask
+  pip install request
+  pip install os
 ```
   
   
