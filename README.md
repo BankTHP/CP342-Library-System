@@ -10,6 +10,6 @@ To run this project
   pip install request
   pip install os
   import db.sql to your Postgressql 
+  Now go to project path and change your password , databasename to match your postgres setup  (line 8-14)
 ```
-  
-  
+  ##
