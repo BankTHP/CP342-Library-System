@@ -1,7 +1,7 @@
 
 ## Installation
   * install Python
-  * install Postgres
+  * install Postgressql
 ## Setup 
 To run this project
 ```
@@ -9,6 +9,7 @@ To run this project
   pip install flask
   pip install request
   pip install os
+  import db.sql to your Postgressql 
 ```
   
   
