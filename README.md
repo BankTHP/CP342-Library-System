@@ -1,6 +1,7 @@
 
 ## Installation
   * install Python
+  * install Postgres
 ## Setup 
 To run this project
 ```
