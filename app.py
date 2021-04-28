@@ -455,20 +455,20 @@ def addborrowers():
             borrowerdate = request.form["borrowerdate"]             
             returndate = request.form["returndate"]  
             books = request.form["book"].split('-')
-            addborrower = """insert into borrower (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
-            cur.execute(addborrower,(std_id,borrowerdate,returndate))
-            x = cur.fetchone()[0]
             check = list()
             for i in range(len(books)) :
                 selbook = """SELECT * FROM book WHERE book_id = %s"""
                 cur.execute(selbook,(books[i],))
-                book = cur.fetchall()[0][5]
+                book = cur.fetchall()[0][5] #Book_id
                 check.append(book)
             if (any(num == 0 for num in check)) :           
                 con.rollback()
-                flash('หนังสือพึ่งถูกยืมไปแล้ว')
+                flash('หนังสือถูกยืมหมดแล้ว')
                 redirect(url_for('addborrowers'))             
             else :
+                addborrower = """insert into borrower (std_id,returndate,borrowerdate) values (%s,%s,%s) RETURNING borrower_id"""
+                cur.execute(addborrower,(std_id,borrowerdate,returndate))
+                x = cur.fetchone()[0]
                 for i in range(len(check)) :
                     updatebook = """UPDATE book SET stock = %s WHERE book_id = %s """
                     cur.execute(updatebook,(check[i]-1,books[i]))
